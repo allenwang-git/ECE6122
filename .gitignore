@@ -1,3 +1,4 @@
 /lab*/cmake-build-debug/*
 /lab*/.idea/*
 /lab1/out*.txt
+.idea/
