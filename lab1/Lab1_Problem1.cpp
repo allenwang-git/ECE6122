@@ -1,7 +1,7 @@
 /*
 Author: Yinuo Wang
 Class: ECE 6122
-Last Date Modified: 09/13/2021
+Last Date Modified: 09/15/2021
 
 Description:
 This program can find all prime factors of the input number.
@@ -13,6 +13,7 @@ All prime factors or message will be output to fill "output1.txt".
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <cctype>
 
 using namespace std;
 
@@ -22,7 +23,8 @@ using namespace std;
  * @param testPrimeInput the number will be tested whether is a prime or not
  * @return true for prime and false for composite.
  * */
-bool IsPrime (unsigned long testPrimeInput){
+bool isPrime(const unsigned long testPrimeInput){
+
     for (int i = 2; i < testPrimeInput; ++i)
     {
         if (testPrimeInput % i ==0)
@@ -34,21 +36,46 @@ bool IsPrime (unsigned long testPrimeInput){
 }
 
 /*
+ * This function is used to check whether an input is valid or not.
+ *
+ * @param strInput input string need to be checked
+ * @param validOutput output the valid number
+ * @return true for valid input and false for invalid input
+ */
+bool isValidInput(const string & strInput, unsigned long & validOutput)
+{
+    unsigned long tmpValid;
+//    check the input is a number or not
+    for (auto chInput : strInput)
+    {
+        if(!isdigit(chInput))
+            return false;
+    }
+//    check the number is valid or not
+    stringstream(strInput) >> tmpValid;
+    if (tmpValid < 2)
+    {
+        return false;
+    }
+    else
+    {
+        validOutput = tmpValid;
+        return true;
+    }
+
+}
+
+/*
  * This function determines the prime factors of ulInputNumber.
  *
  * @param ulInputNumber the input number that need to be found factors
  * @param strOutput the string of all prime factors
  * @return true for success and false for failure
  * */
-bool GetPrimeFactors (const unsigned long ulInputNumber, string &strOutput){
-//    Check invalid input
-    if (ulInputNumber < 2)
-    {
-        cout << "This number is neither prime nor composite.\nPlease change a number.\n";
-        return false;
-    }
+bool GetPrimeFactors (const unsigned long ulInputNumber, string &strOutput)
+{
 //    Get every prime factors
-    if (IsPrime(ulInputNumber))
+    if (isPrime(ulInputNumber))
     {
         strOutput += to_string(ulInputNumber); // last update of factors string
         return true;
@@ -78,34 +105,39 @@ bool GetPrimeFactors (const unsigned long ulInputNumber, string &strOutput){
 int main(int argc, char* argv[])
 {
     string strOutput;
-    unsigned long ulInputNumber;
+    unsigned long ulInputNumber{0};
     fstream outputFile("output1.txt", ios::out | ios::trunc);
-//    Parse parameters from command line
-    if (argc != 2)
+
+//    Parse parameters from command line and check invalid input
+    if (argc != 2) //  check the number of arguments
     {
-        cout << "Usage: Please input one number when run this program.\n";
+        strOutput =  "Invalid Input";
+        cout << "Please input one and only one number for this program.\n";
     }
-    else
+//    bool isValid = isValid;
+    if(!isValidInput(argv[1], ulInputNumber))  //  check if input is valid
     {
-        stringstream(argv[1]) >> ulInputNumber;
+        strOutput =  "Invalid Input";
+        cout << "Your input is invalid, please input a digital number for this program.\n";
     }
-//    Get the prime factors of valid input
-    if (IsPrime(ulInputNumber))
+    else if (isPrime(ulInputNumber))  //   Check if input is a prime
     {
         strOutput = "No prime factors";
+        cout << "Your input is a prime, which has no prime factors.\n";
     }
-    else
+    else   //    Get the prime factors of valid input
     {
         GetPrimeFactors(ulInputNumber, strOutput);
     }
+
 //    Output prime factors to file
-    if (outputFile.bad())
+    if (outputFile.good())
     {
-        cout << "Can not open output file.\n";
+        outputFile << strOutput;
     }
     else
     {
-        outputFile << strOutput;
+        cout << "Can not open output file.\n";
     }
     return 0;
 }
