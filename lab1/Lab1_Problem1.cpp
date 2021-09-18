@@ -6,7 +6,8 @@ Last Date Modified: 09/15/2021
 Description:
 This program can find all prime factors of the input number.
 If input is a prime number, the output will be "No prime factors".
-All prime factors or message will be output to fill "output1.txt".
+If input is not a valid number, the output will be "Invalid Input".
+All prime factors or message will output to file "output1.txt".
 */
 
 #include <iostream>
@@ -62,7 +63,6 @@ bool isValidInput(const string & strInput, unsigned long & validOutput)
         validOutput = tmpValid;
         return true;
     }
-
 }
 
 /*
@@ -70,7 +70,7 @@ bool isValidInput(const string & strInput, unsigned long & validOutput)
  *
  * @param ulInputNumber the input number that need to be found factors
  * @param strOutput the string of all prime factors
- * @return true for success and false for failure
+ * @return true for having prime factors and false for no prime factors
  * */
 bool GetPrimeFactors (const unsigned long ulInputNumber, string &strOutput)
 {
@@ -78,7 +78,7 @@ bool GetPrimeFactors (const unsigned long ulInputNumber, string &strOutput)
     if (isPrime(ulInputNumber))
     {
         strOutput += to_string(ulInputNumber); // last update of factors string
-        return true;
+        return false;
     }
     else
     {
@@ -112,22 +112,17 @@ int main(int argc, char* argv[])
     if (argc != 2) //  check the number of arguments
     {
         strOutput =  "Invalid Input";
-        cout << "Please input one and only one number for this program.\n";
+        cout << "[ECE6122-Lab1-1] Please input one and only one number for this program.\n";
     }
-//    bool isValid = isValid;
-    if(!isValidInput(argv[1], ulInputNumber))  //  check if input is valid
+    else if(!isValidInput(argv[1], ulInputNumber))  //  check if input is valid
     {
         strOutput =  "Invalid Input";
-        cout << "Your input is invalid, please input a digital number for this program.\n";
+        cout << "[ECE6122-Lab1-1] Your input is invalid, please input a digital number for this program.\n";
     }
-    else if (isPrime(ulInputNumber))  //   Check if input is a prime
+    else if (!GetPrimeFactors(ulInputNumber, strOutput))   //    Get the prime factors of valid input
     {
         strOutput = "No prime factors";
-        cout << "Your input is a prime, which has no prime factors.\n";
-    }
-    else   //    Get the prime factors of valid input
-    {
-        GetPrimeFactors(ulInputNumber, strOutput);
+        cout << "[ECE6122-Lab1-1] Your input is a prime, which has no prime factors.\n";
     }
 
 //    Output prime factors to file
@@ -137,7 +132,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        cout << "Can not open output file.\n";
+        cout << "[ECE6122-Lab1-1] Can not open output file.\n";
     }
     return 0;
 }
