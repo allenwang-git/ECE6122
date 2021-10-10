@@ -1,7 +1,7 @@
 /*
 Author: Yinuo Wang
 Class: ECE 6122
-Last Date Modified: 09/18/2021
+Last Date Modified: 09/20/2021
 
 Description:
 This program can find the reflection number after the laser exits a triangle.
@@ -20,7 +20,9 @@ And the number or error message will output to file "output3.txt".
 #define AC 3
 
 using namespace std;
-
+/*
+ *  This class is used to handle reflection task
+ * */
 class Reflection{
 public:
     Reflection(const double posInput){
@@ -35,31 +37,34 @@ private:
     bool get2LinesIntersection(double A1, double B1, double C1, double A2, double B2, double C2, double& x, double& y);
     void getSymmetryLine();
     void getReflectLine();
+
     const double yPosAB = 10. * sqrt(3.);
+    const double origin[2]={0.,0.};
+
     double incidentA{}, incidentB{}, incidentC{};
     double reflectA{}, reflectB{}, reflectC{};
     double symmetryA{}, symmetryB{}, symmetryC{};
-    const double origin[2]={0.,0.};
 
     const double lineAB_A{0.}, lineAB_B{1.}, lineAB_C{-yPosAB};
     const double lineBC_A{sqrt(3.)}, lineBC_B{-1.},lineBC_C{0.};
     const double lineAC_A{-sqrt(3.)},lineAC_B{-1.},lineAC_C{0.};
 
-    const double perpendicularAB_A{1}, perpendicularAB_B{0};
-    const double perpendicularBC_A{-1/ sqrt(3.)}, perpendicularBC_B{-1.};
-    const double perpendicularAC_A{1/ sqrt(3.)},perpendicularAC_B{-1.};
+    const double perpendicularAB_A{1.}, perpendicularAB_B{0.};
+    const double perpendicularBC_A{-1./ sqrt(3.)}, perpendicularBC_B{-1.};
+    const double perpendicularAC_A{1./ sqrt(3.)},perpendicularAC_B{-1.};
 
-    const double perpendicularA_A{-1/ sqrt(3.)},perpendicularA_B{-1.},perpendicularA_C{20/ sqrt(3.)};
-    const double perpendicularB_A{1/ sqrt(3.)},perpendicularB_B{-1.},perpendicularB_C{20/ sqrt(3.)};
+    const double perpendicularA_A{-1./ sqrt(3.)},perpendicularA_B{-1.},perpendicularA_C{20./ sqrt(3.)};
+    const double perpendicularB_A{1./ sqrt(3.)},perpendicularB_B{-1.},perpendicularB_C{20./ sqrt(3.)};
 
+    double xAB,yAB,xBC,yBC,xAC,yAC;
     bool firstTime{true};
     int pre_intersectLine;
 };
 
 /*
  * This function can compute a line equation given 2 points
- * @param x1, y1 the coordinate of one point
- * @param x2, y2 the coordinate of another point
+ * @param x1, y1 are the coordinates of one point
+ * @param x2, y2 are the coordinates of another point
  * */
 void Reflection::get2PointsLine(double x1, double y1, double x2, double y2){
 //   Line: (y-y1)/(x-x1) = (y-y2)/(x-x2)
@@ -70,9 +75,9 @@ void Reflection::get2PointsLine(double x1, double y1, double x2, double y2){
 }
 /*
  * This function can compute the intersection point given 2 lines
- * @param A1, B1, C1 factors of one line
- * @param A2, B2, C2 factors of one line
- * @param x,y intersection point coordinate
+ * @param A1, B1, C1 are factors of one line
+ * @param A2, B2, C2 are factors of another line
+ * @param x,y are intersection point coordinates
  * @return true if intersection exits and false if lines are parallel
  * */
 bool Reflection::get2LinesIntersection(double A1, double B1, double C1, double A2, double B2, double C2, double &x, double &y){
@@ -95,14 +100,16 @@ bool Reflection::get2LinesIntersection(double A1, double B1, double C1, double A
  * given the incident line equation and intersection point.
  *
  * */
+#include <iomanip>
 void Reflection::getSymmetryLine(){
-    double xAB,yAB,xBC,yBC,xAC,yAC;
+
+    double xx,yy;
 //    compute intersection point with every line
-    get2LinesIntersection(incidentA,incidentB,incidentC,lineAB_A,lineAB_B,lineAB_C,xAB,yAB);
-    get2LinesIntersection(incidentA,incidentB,incidentC,lineBC_A,lineBC_B,lineBC_C,xBC,yBC);
-    get2LinesIntersection(incidentA,incidentB,incidentC,lineAC_A,lineAC_B,lineAC_C,xAC,yAC);
+    this->get2LinesIntersection(incidentA,incidentB,incidentC,lineAB_A,lineAB_B,lineAB_C,xAB,yAB);
+    this->get2LinesIntersection(incidentA,incidentB,incidentC,lineBC_A,lineBC_B,lineBC_C,xBC,yBC);
+    this->get2LinesIntersection(incidentA,incidentB,incidentC,lineAC_A,lineAC_B,lineAC_C,xAC,yAC);
 //    decide the correct intersection point and compute symmetry line
-    if (xAB< 10. && xAB> -10. && yAB == yPosAB && pre_intersectLine!=AB)
+    if (xAB< 10. && xAB> -10. && yAB - yPosAB < 1e-12 && pre_intersectLine!=AB)
     {
         symmetryA = perpendicularAB_A;
         symmetryB = perpendicularAB_B;
@@ -146,9 +153,9 @@ void Reflection::getSymmetryLine(){
 void Reflection::getReflectLine()
 {
 //    compute reflection line
-    reflectA = incidentA * (pow(symmetryB,2) - pow(symmetryA,2)) - 2*symmetryA*symmetryB*incidentB;
-    reflectB = incidentB * (pow(symmetryA,2) - pow(symmetryB,2)) - 2*symmetryA*symmetryB*incidentA;
-    reflectC = incidentC * (pow(symmetryA,2) + pow(symmetryB,2)) - 2*symmetryC*(symmetryA*incidentA + symmetryB*incidentB);
+    reflectA = incidentA * (pow(symmetryB,2) - pow(symmetryA,2)) - 2.*symmetryA*symmetryB*incidentB;
+    reflectB = incidentB * (pow(symmetryA,2) - pow(symmetryB,2)) - 2.*symmetryA*symmetryB*incidentA;
+    reflectC = incidentC * (pow(symmetryA,2) + pow(symmetryB,2)) - 2.*symmetryC*(symmetryA*incidentA + symmetryB*incidentB);
 //    update incident line
     incidentA = reflectA;
     incidentB = reflectB;
@@ -160,17 +167,17 @@ void Reflection::getReflectLine()
  * */
 void Reflection::getReflectioinTimes(){
     if (firstTime){
-        get2PointsLine(origin[0],origin[1], xPosABInput, yPosAB);
+        this->get2PointsLine(origin[0],origin[1], xPosABInput, yPosAB);
         firstTime =false;
     }
-    getSymmetryLine();
-    getReflectLine();
+    this->getSymmetryLine();
+    this->getReflectLine();
 //    check if the beam can exit this time
-    if ((reflectC/reflectB) <= 0.01f && abs(reflectC/reflectA) <= (0.01* sqrt(3.)) && reflectA!=0. && reflectB!=0.)
+    if ((reflectC/reflectB) <= 0.01 && abs(reflectC/reflectA) <= (0.01* sqrt(3.)) && reflectA!=0. && reflectB!=0.)
     {
         reflectTimes++;
     }
-    else if (reflectB ==0. && reflectA!=0 && abs(reflectC/reflectA) <= (0.01* sqrt(3.)))
+    else if (reflectB ==0. && reflectA!=0. && abs(reflectC/reflectA) <= (0.01* sqrt(3.)))
     {
         reflectTimes++;
     }
@@ -181,7 +188,7 @@ void Reflection::getReflectioinTimes(){
     else // If not exit, reflect again
     {
         reflectTimes++;
-        getReflectioinTimes();
+        this->getReflectioinTimes();
     }
 }
 
