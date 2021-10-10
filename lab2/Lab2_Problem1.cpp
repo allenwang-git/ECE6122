@@ -15,7 +15,9 @@ into file "ProblemOne.txt".
 #include <thread>
 #include <vector>
 #include <atomic>
-//#include "ctime"
+#include "ctime"
+#include "mutex"
+#include <sys/time.h>
 
 using namespace std;
 
@@ -43,29 +45,33 @@ bool antFinish(const bool high[]) {
  * @param x is the grid's x coordinate
  * @param y is the grid's y coordinate
  * */
-void generateNextGrid(int &x, int &y) {
+void generateNextGrid(int &x, int &y, int r) {
 //    srand((int)time(NULL));
 //    int nextGrid = rand() % 4 + 1;
-//    static default_random_engine e(time(0));
-//  use Random Class in c++11 to generate random number
-    random_device rd;
-    static uniform_int_distribution<unsigned> u(1, 4);
-//    int nextGrid =;
+
+////    struct timeval time;
+//    time_t seed = time(nullptr);
+//    static default_random_engine rd( seed);
+////  use Random Class in c++11 to generate random number
+////    random_device rd;
+//    static uniform_int_distribution<short> u(1, 4);
+//    int nextGrid =;u(rd)
     x = y = 0;
-    switch (u(rd)) {
+    switch (r) {
         case 1:
-            y = 1;
+            y++;
             break;
         case 2:
-            x = 1;
+            x++;
             break;
         case 3:
-            y = -1;
+            y--;
             break;
         case 4:
-            x = -1;
+            x--;
             break;
         default:
+//            cout<<"wrong";
             break;
     }
 
@@ -79,41 +85,38 @@ void generateNextGrid(int &x, int &y) {
  *
  * */
 int antRunARound() {
-    int ant_x = 2, ant_y = 2;
-    bool seedFlag = false;
-//    clock_t start,end,end2;
-    bool lowSeedFlag[] = {true, true, true, true, true};
-    bool highSeedFlag[] = {false, false, false, false, false};
-    int counter = 0;
-    do {
-        counter++;
-        int next_x, next_y;
-//        start=clock();		//程序开始计时
+//    int ant_x = 2, ant_y = 2, counter = 0, antFinish=0;
+//    bool seedFlag = false;
+//    bool lowSeedFlag[] = {true, true, true, true, true},
+//        highSeedFlag[] = {false, false, false, false, false};
+//
+//    do {
+//        counter++;
+//        int next_x, next_y;
+////        clock_t s,e;
+////        s=clock();
+//        do {
+//            generateNextGrid(next_x, next_y);
+//            //    Regenerate a new grid if the grid is beyond the 5x5 range
+//        } while (ant_x + next_x > 4 || ant_x + next_x < 0 || ant_y + next_y > 4 || ant_y + next_y < 0);
+//        ant_x += next_x;
+//        ant_y += next_y;
+////        e=clock();
+////        cout<<this_thread::get_id()<<" "<<(double)(e-s)/ CLOCKS_PER_SEC<<endl;
+////      Condition that ant will take a seed
+//        if (ant_y == 0 && !seedFlag &&  lowSeedFlag[ant_x]) {
+//            seedFlag = true;
+//            lowSeedFlag[ant_x] = false;
+//        }
+////      Condition that ant will drop a seed
+//        if (ant_y == 4 && seedFlag && !highSeedFlag[ant_x]) {
+//            seedFlag = false;
+//            highSeedFlag[ant_x] = true;
+//            ++antFinish;
+//        }
+//    } while (antFinish<=4);
 
-
-        do {
-            generateNextGrid(next_x, next_y);
-            //    Regenerate a new grid if the grid is beyond the 5x5 range
-        } while (ant_x + next_x > 4 || ant_x + next_x < 0 || ant_y + next_y > 4 || ant_y + next_y < 0);
-        ant_x += next_x;
-        ant_y += next_y;
-//        end=clock();		//程序结束用时
-//        cout<<"gbg:"<<(double)(end-start)<<endl;
-//      Condition that ant will take a seed
-        if (!seedFlag && ant_y == 0 && lowSeedFlag[ant_x]) {
-            seedFlag = !seedFlag;
-            lowSeedFlag[ant_x] = false;
-        }
-//      Condition that ant will drop a seed
-        if (seedFlag && ant_y == 4 && !highSeedFlag[ant_x]) {
-            seedFlag = !seedFlag;
-            highSeedFlag[ant_x] = true;
-        }
-//        end2=clock();		//程序结束用时
-//        cout<<(double)(end2-end)<<endl;
-    } while (!antFinish(highSeedFlag));
-
-    return counter;
+//    return counter;
 }
 
 std::atomic<long> steps(0);
@@ -124,10 +127,52 @@ std::atomic<long> steps(0);
  * */
 void antRunNRounds(int n) {
     int count(0);
+    std::mutex mtx;
+
+    struct timeval time;
+//    time_t seed = time(nullptr);
+    static default_random_engine rd;//( time.tv_sec+time.tv_usec);
+//  use Random Class in c++11 to generate random number
+//    random_device rd;
+    static uniform_int_distribution<int> u(1, 4);
     while (count < n) {
         ++count;
-        steps += antRunARound();
+        int ant_x = 2, ant_y = 2, counter = 0;
+//        generateNextGrid(a,b,u(rd));
+        bool seedFlag = false;
+        bool lowSeedFlag[] = {true, true, true, true, true},
+                highSeedFlag[] = {false, false, false, false, false};
+
+        do {
+            counter++;
+            int next_x, next_y;
+//        clock_t s,e;
+//        s=clock();
+            do {
+                mtx.lock();
+                generateNextGrid(next_x, next_y, rd() % 4 + 1);
+                mtx.unlock();
+                //    Regenerate a new grid if the grid is beyond the 5x5 range
+            } while (ant_x + next_x > 4 || ant_x + next_x < 0 || ant_y + next_y > 4 || ant_y + next_y < 0);
+            ant_x += next_x;
+            ant_y += next_y;
+//        e=clock();
+//        cout<<this_thread::get_id()<<" "<<(double)(e-s)/ CLOCKS_PER_SEC<<endl;
+//      Condition that ant will take a seed
+            if (ant_y == 0 && !seedFlag && lowSeedFlag[ant_x]) {
+                seedFlag = true;
+                lowSeedFlag[ant_x] = false;
+            }
+//      Condition that ant will drop a seed
+            if (ant_y == 4 && seedFlag && !highSeedFlag[ant_x]) {
+                seedFlag = false;
+                highSeedFlag[ant_x] = true;
+//                ++antFinish;
+            }
+        } while (!antFinish(highSeedFlag));
+        steps += counter;
     }
+
 }
 
 /*
@@ -138,7 +183,7 @@ void antRunNRounds(int n) {
 int main() {
     //   Create a file for output result
     fstream outputFile("ProblemOne.txt", ios::out | ios::trunc);
-    const int runTimes = 10000;
+    const int runTimes = 1000000;
     double average;
 
     vector<std::thread> threads;
@@ -146,8 +191,9 @@ int main() {
     for (int i = 1; i <= nthreads; ++i)
         threads.push_back(std::thread(antRunNRounds, runTimes / nthreads));
     for (auto &th: threads) th.join();
-    cout << steps;
+    cout << steps << endl;
     //    compute the average steps ants need to move
+
     average = steps / (double) runTimes;
 
     //    Output prime factors to file
