@@ -15,14 +15,15 @@ into file "ProblemOne.txt".
 #include <thread>
 #include <vector>
 #include <atomic>
+//#include "ctime"
 
 using namespace std;
 
-struct Ant {
-    int grid_x = 2;
-    int grid_y = 2;
-    bool seedFlag = false;
-};
+//struct Ant {
+//    int grid_x = 2;
+//    int grid_y = 2;
+//    bool seedFlag = false;
+//};
 
 /*
  * This function check whether the ant finish one round task or not
@@ -42,16 +43,16 @@ bool antFinish(const bool high[]) {
  * @param x is the grid's x coordinate
  * @param y is the grid's y coordinate
  * */
-void generateNextGrid(Ant &a, int &x, int &y) {
+void generateNextGrid(int &x, int &y) {
 //    srand((int)time(NULL));
 //    int nextGrid = rand() % 4 + 1;
 //    static default_random_engine e(time(0));
 //  use Random Class in c++11 to generate random number
     random_device rd;
     static uniform_int_distribution<unsigned> u(1, 4);
-    int nextGrid = u(rd);
+//    int nextGrid =;
     x = y = 0;
-    switch (nextGrid) {
+    switch (u(rd)) {
         case 1:
             y = 1;
             break;
@@ -67,11 +68,9 @@ void generateNextGrid(Ant &a, int &x, int &y) {
         default:
             break;
     }
-//    Regenerate a new grid if the grid is beyond the 5x5 range
-    while (a.grid_x + x > 4 || a.grid_x + x < 0 || a.grid_y + y > 4 || a.grid_y + y < 0) {
-        generateNextGrid(a, x, y);
-    }
+
 }
+
 
 /*
  * This function realize the ant's one-time task, which is taking all seeds from bottom to the top.
@@ -80,26 +79,38 @@ void generateNextGrid(Ant &a, int &x, int &y) {
  *
  * */
 int antRunARound() {
-    Ant a;
+    int ant_x = 2, ant_y = 2;
+    bool seedFlag = false;
+//    clock_t start,end,end2;
     bool lowSeedFlag[] = {true, true, true, true, true};
     bool highSeedFlag[] = {false, false, false, false, false};
     int counter = 0;
     do {
         counter++;
         int next_x, next_y;
-        generateNextGrid(a, next_x, next_y);
-        a.grid_x += next_x;
-        a.grid_y += next_y;
+//        start=clock();		//程序开始计时
+
+
+        do {
+            generateNextGrid(next_x, next_y);
+            //    Regenerate a new grid if the grid is beyond the 5x5 range
+        } while (ant_x + next_x > 4 || ant_x + next_x < 0 || ant_y + next_y > 4 || ant_y + next_y < 0);
+        ant_x += next_x;
+        ant_y += next_y;
+//        end=clock();		//程序结束用时
+//        cout<<"gbg:"<<(double)(end-start)<<endl;
 //      Condition that ant will take a seed
-        if (!a.seedFlag && a.grid_y == 0 && lowSeedFlag[a.grid_x]) {
-            a.seedFlag = true;
-            lowSeedFlag[a.grid_x] = false;
+        if (!seedFlag && ant_y == 0 && lowSeedFlag[ant_x]) {
+            seedFlag = !seedFlag;
+            lowSeedFlag[ant_x] = false;
         }
 //      Condition that ant will drop a seed
-        if (a.seedFlag && a.grid_y == 4 && !highSeedFlag[a.grid_x]) {
-            a.seedFlag = false;
-            highSeedFlag[a.grid_x] = true;
+        if (seedFlag && ant_y == 4 && !highSeedFlag[ant_x]) {
+            seedFlag = !seedFlag;
+            highSeedFlag[ant_x] = true;
         }
+//        end2=clock();		//程序结束用时
+//        cout<<(double)(end2-end)<<endl;
     } while (!antFinish(highSeedFlag));
 
     return counter;
@@ -114,7 +125,7 @@ std::atomic<long> steps(0);
 void antRunNRounds(int n) {
     int count(0);
     while (count < n) {
-        count++;
+        ++count;
         steps += antRunARound();
     }
 }
