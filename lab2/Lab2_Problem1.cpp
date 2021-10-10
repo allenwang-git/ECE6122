@@ -15,11 +15,13 @@ into file "ProblemOne.txt".
 #include <thread>
 #include <vector>
 #include <atomic>
-#include "ctime"
-#include "mutex"
 #include <sstream>
+
 using namespace std;
 
+std::atomic<long> steps(0);
+int currentTimes = 0, equalTimes = 0, coverageTimes;
+double currentAVG, prevAVG = 0, coverageSteps = 0;
 
 /*
  * This function check whether the ant finish one round task or not
@@ -32,23 +34,6 @@ bool antFinish(const bool high[]) {
     }
     return true;
 }
-
-
-/*
- * This function realize the ant's one-time task, which is taking all seeds from bottom to the top.
- *
- * @return counter is the number of steps the ant taking.
- *
- * */
-//int antRunARound(const unsigned int rd)
-//{
-
-//    return counter;
-//}
-
-std::atomic<long> steps(0);
-int currentTimes = 0, equalTimes = 0, coverageTimes;
-double currentAVG, prevAVG = 0, coverageSteps;
 
 /*
  * This function is the multi-threads function to run the task many times
@@ -106,6 +91,7 @@ void antRunNRounds(int n) {
             }
         } while (!antFinish(highSeedFlag));
         steps += counter;
+//        check if converge
         double currentAVG = steps / (double) currentTimes;
         currentAVG = round(currentAVG * 1000000) / 1000000;
 //        cout<<currentAVG<<endl;
@@ -131,26 +117,29 @@ int main(int argc, char *argv[]) {
     fixed(outputFile);
 
     double average;
-    int runTimes = 6000008;
+    int runTimes = 10000008;
     if (argv[1] > 0)
         stringstream(argv[1]) >> runTimes;
 
-//  create multithreads
+    //  create multi-threads
     vector<std::thread> threads;
     auto nthreads = thread::hardware_concurrency();
     for (int i = 1; i <= nthreads; ++i)
         threads.push_back(std::thread(antRunNRounds, runTimes / nthreads));
     for (auto &th: threads) th.join();
-    cout << steps << endl;
+
     //    compute the average steps ants need to move
     average = steps / (double) runTimes;
-
+    cout << "Average Steps: " << average << endl;
     //    Output prime factors to file
     if (outputFile.good()) {
         outputFile << "Number of threads created: " << nthreads << endl << endl;
         outputFile << "Expected number of steps: " << average << endl << endl;
-        outputFile << "Total number of runs needed for solution convergence: " << coverageTimes << " " << coverageSteps
-                   << endl << endl;
+        if (coverageSteps != 0)
+            outputFile << "Total number of runs needed for solution convergence: " << coverageTimes
+                       << " " << coverageSteps << endl;
+        else
+            outputFile << "Total number of runs needed for solution convergence: " << runTimes << endl;
     } else {
         cout << "[ECE6122-Lab2-1] Can not open output file.\n";
     }
