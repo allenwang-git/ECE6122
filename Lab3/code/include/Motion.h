@@ -38,11 +38,10 @@ public:
     void getXPosition() {
         x = x0 + vx0 * t;
     }
-
+    float t = 0.f;
 private:
     const float a = -9.80f;
     float x, y, v0, vx0, vy0, v, vx, vy, x0, y0;
-    float t = 0.f;
     double theta0, theta;
 
 
