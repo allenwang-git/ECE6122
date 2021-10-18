@@ -45,6 +45,14 @@ public:
         cout << " x" << x << " y" << y << " vx" << vx << " vy" << vy << " theta:" << theta << endl;
     }
 
+    void reset() {
+        v = v0;
+        x = x0;
+        y = y0;
+        theta = theta0;
+        t = 0.f;
+    }
+
     float t = 0.f;
 private:
     const float a = 9.80f * 10.;

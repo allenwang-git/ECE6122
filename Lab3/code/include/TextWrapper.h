@@ -9,6 +9,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <sstream>
 
 using namespace sf;
 using namespace std;
@@ -37,10 +38,19 @@ public:
         text.setPosition(px, py);
     }
 
-    Text text;
+    void setScore(const int scores) {
+        stringstream ss;
+        ss << "Score: " << scores;
+        text.setString(ss.str());
+    }
+
+    void draw(RenderWindow &window) {
+        window.draw(text);
+    }
+
 private:
     Font font;
-
+    Text text;
 };
 
 
