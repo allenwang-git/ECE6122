@@ -7,7 +7,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-//#include <SFML/Audio.hpp>
 #include <string>
 
 using namespace sf;
@@ -41,6 +40,15 @@ public:
         sprite.setPosition(x, y);
     }
 
+    Vector2f getPosition() {
+        return sprite.getPosition();
+    }
+
+//  set object center for transformation
+    void setOrigin(const float x, const float y) {
+        sprite.setOrigin(x, y);
+    }
+
     void draw(RenderWindow &window) {
         window.draw(sprite);
     }
@@ -52,17 +60,5 @@ private:
     Texture texture;
     Sprite sprite;
 };
-
-/*
-// Is the buzzy currently moving?
-bool buzzyActive = false;
-bool unicornActive = false;
-bool insectActive = false;
-
-// How fast can the buzzy fly
-float buzzySpeed = 0.0f;
-float unicornSpeed = 0.0f;
-float insectSpeed = 0.0f;
-*/
 
 #endif //LAB3_SPRITEWRAPPER_H

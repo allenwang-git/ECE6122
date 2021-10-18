@@ -3,9 +3,9 @@
 #include "include/TextWrapper.h"
 #include "include/BarWrapper.h"
 #include "include/Motion.h"
-//#include <vector>
+#include <SFML/System/Vector2.hpp>
 #include <cmath>
-
+#include <random>
 using namespace sf;
 using namespace std;
 
@@ -19,43 +19,42 @@ int main() {
     window.setView(view);
 
 //    create Sprite objects
-    SpriteWrapper background("graphics/background.png", 0, 0, 1, 1);
-    SpriteWrapper buzzy("graphics/smallbuzzy.png", 30, 650, 1.4f, 1.4f);
-    SpriteWrapper buzzy_life("graphics/buzzy life.png", 150, 20, 0.5f, 0.5f);
-    SpriteWrapper insect("graphics/insect.png", 1600, 200, 1.5f, 1.5f);
+    SpriteWrapper background("../graphics/background.png", 0, 0, 1, 1);
+    SpriteWrapper buzzy("../graphics/smallbuzzy.png", 150, 520, 1.4f, 1.4f);
+    SpriteWrapper buzzy_life("../graphics/buzzy life.png", 150, 20, 0.5f, 0.5f);
+    SpriteWrapper insect("../graphics/bee.png", 1600, 200, 1.5f, 1.5f);
 //    column 1
-    SpriteWrapper sheep("graphics/sheep.png", 1500, 300, 1.5f, 1.5f);
-    SpriteWrapper bunny("graphics/bunny.png", 1500, 450, 1.6f, 1.6f);
-    SpriteWrapper dog("graphics/dog.png", 1500, 600, 1.5f, 1.5f);
-    SpriteWrapper evilTiger("graphics/tiger.png", 1500, 750, 0.17f, 0.17f);
-    SpriteWrapper mouse("graphics/mouse.png", 1500, 900, 1.4f, 1.4f);
+    SpriteWrapper sheep("../graphics/sheep.png", 1500, 300, 1.5f, 1.5f);
+    SpriteWrapper bunny("../graphics/bunny.png", 1500, 450, 1.6f, 1.6f);
+    SpriteWrapper dog("../graphics/dog.png", 1500, 600, 1.5f, 1.5f);
+    SpriteWrapper evilTiger("../graphics/tiger.png", 1500, 750, 0.17f, 0.17f);
+    SpriteWrapper mouse("../graphics/mouse.png", 1500, 900, 1.4f, 1.4f);
 //    column 2
-    SpriteWrapper unicorn("graphics/angry_unicorn.png", 1700, 300, 1.5f, 1.5f);
-    SpriteWrapper frog("graphics/frog.png", 1750, 450, 1.4f, 1.4f);
-    SpriteWrapper evilBulldog("graphics/Bulldog.png", 1720, 590, 1.8f, 1.8f);
-    SpriteWrapper pig("graphics/pig.png", 1750, 750, 1.4f, 1.4f);
-    SpriteWrapper chicken("graphics/chicken.png", 1750, 900, 1.8f, 1.6f);
+    SpriteWrapper unicorn("../graphics/angry_unicorn.png", 1700, 300, 1.5f, 1.5f);
+    SpriteWrapper frog("../graphics/frog.png", 1750, 450, 1.4f, 1.4f);
+    SpriteWrapper evilBulldog("../graphics/Bulldog.png", 1720, 590, 1.8f, 1.8f);
+    SpriteWrapper pig("../graphics/pig.png", 1750, 750, 1.4f, 1.4f);
+    SpriteWrapper chicken("../graphics/chicken.png", 1750, 900, 1.8f, 1.6f);
 
 //  Modification
-    buzzy.setRotation(315.f);
-
+    buzzy.rotate(-45.f);
+    buzzy.setOrigin(150, 80);
 
 //  create a power bar
     BarWrapper powerBar(500, 50, 'r', 150, 925);
-//    sf::VertexArray lines(sf::LineStrip, 4);
-//    create static text
-    TextWrapper tTitle("fonts/KOMIKAP_.ttf", "Buzzy's Revenge", 80, 'r', 960, 200);
-    TextWrapper tRestart("fonts/KOMIKAP_.ttf", "Press Enter to Restart Game", 50, 'w', 960, 400);
-    TextWrapper tExit("fonts/KOMIKAP_.ttf", "Press Esc to Exit", 50, 'w', 960, 460);
-    TextWrapper tPowerup("fonts/KOMIKAP_.ttf", "Press Space to Powerup", 50, 'w', 960, 520);
-    TextWrapper tAim("fonts/KOMIKAP_.ttf", "Press up/down arrow to Aim", 50, 'w', 960, 580);
-    TextWrapper tAuthor("fonts/KOMIKAP_.ttf", "Created by\n Yinuo Wang", 25, 'w', 960, 750);
-    TextWrapper tPower("fonts/KOMIKAP_.ttf", "Power", 30, 'w', 80, 950);
-    TextWrapper tLives("fonts/KOMIKAP_.ttf", "Lives", 30, 'w', 80, 50);
-    TextWrapper tScore("fonts/KOMIKAP_.ttf", "Score: 99", 30, 'w', 1750, 50);
 
+//  create text
+    TextWrapper tTitle("../fonts/KOMIKAP_.ttf", "Buzzy's Revenge", 80, 'r', 960, 200);
+    TextWrapper tRestart("../fonts/KOMIKAP_.ttf", "Press Enter to Restart Game", 50, 'w', 960, 400);
+    TextWrapper tExit("../fonts/KOMIKAP_.ttf", "Press Esc to Exit", 50, 'w', 960, 460);
+    TextWrapper tPowerup("../fonts/KOMIKAP_.ttf", "Press Space to Powerup", 50, 'w', 960, 520);
+    TextWrapper tAim("../fonts/KOMIKAP_.ttf", "Press up/down arrow to Aim", 50, 'w', 960, 580);
+    TextWrapper tAuthor("../fonts/KOMIKAP_.ttf", "Created by\n Yinuo Wang", 25, 'w', 960, 750);
+    TextWrapper tPower("../fonts/KOMIKAP_.ttf", "Power", 30, 'w', 80, 950);
+    TextWrapper tLives("../fonts/KOMIKAP_.ttf", "Lives", 30, 'w', 80, 50);
+    TextWrapper tScore("../fonts/KOMIKAP_.ttf", "Score: 99", 30, 'w', 1750, 50);
 
-//
+//  create the motion object to handle buzzy motion
     Motion buzzyMotion;
 
 
@@ -63,12 +62,11 @@ int main() {
     Clock clock;
 // Track whether the game is running
     bool pausedFlag = true;
-    float power = 0.f;
-
+    float power = 100.f;
 
     while (window.isOpen()) {
-        buzzy.movingSpeed = power / 100.f;
-
+        buzzy.movingSpeed = power * 4.f;
+        powerBar.setSize(power);
 
         /******************************
          Handle the player's input
@@ -82,20 +80,16 @@ int main() {
             pausedFlag = false;
             buzzy.movingFlag = true;
             buzzyMotion.initialize(buzzy.px0, buzzy.py0, buzzy.movingSpeed, buzzy.getRotation());
-
+            clock.restart();
         }
 //        change buzz initial launch power
         if (Keyboard::isKeyPressed(Keyboard::Space)) {
             if (power < powerBar.barLength) {
                 power += .5f;
-                powerBar.setSize(power);
             }
-
-//            cout<< buzzy.movingSpeed<<endl;
         }
 //        change buzz initial launch direction
         if (Keyboard::isKeyPressed(Keyboard::Up)) {
-//            cout<<buzzy.getRotation()<<endl;
             if ((buzzy.getRotation() <= 360.f && buzzy.getRotation() > UPPER_BOUND)
                 || (buzzy.getRotation() >= 0.f && buzzy.getRotation() <= LOWER_BOUND))
                 buzzy.rotate(-.1f);
@@ -103,24 +97,42 @@ int main() {
                 buzzy.setRotation(round(buzzy.getRotation()) + 0.1f);
         }
         if (Keyboard::isKeyPressed(Keyboard::Down)) {
-//            cout<<buzzy.getRotation()<<endl;
             if ((buzzy.getRotation() <= 360.f && buzzy.getRotation() >= UPPER_BOUND)
                 || (buzzy.getRotation() >= 0.f && buzzy.getRotation() < LOWER_BOUND))
                 buzzy.rotate(.1f);
             else
                 buzzy.setRotation(round(buzzy.getRotation()) - 0.1f);
         }
+
+
         /****************************
          Update the screen
         ****************************/
-        if (!pausedFlag && buzzy.movingFlag) {
+        if (!pausedFlag) {
             Time dt = clock.restart();
             buzzyMotion.t += dt.asSeconds();
-//            buzzy.setPosition(buzzy.px0,buzzy.py0);
-            if (buzzyMotion.t != 0)
+//        Moving the buzzy
+            if (buzzy.movingFlag) {
+                buzzy.setPosition(buzzyMotion.getXPosition(), buzzyMotion.getYPosition());
                 buzzy.setRotation(buzzyMotion.getVelocityDirection());
+//                buzzyMotion.show();
+            }
+//          Moving the bee
+            if (insect.movingFlag) {
+                insect.setPosition(insect.getPosition().x
+                                   - dt.asSeconds() * insect.movingSpeed, insect.getPosition().y);
 
-
+                if (insect.getPosition().x < -100.)
+                    insect.movingFlag = false;
+            } else {
+                random_device rd;
+                default_random_engine e(rd());
+                uniform_int_distribution<int> h(100, 800);
+                insect.setPosition(2020, h(e));
+                uniform_int_distribution<int> speed(200, 400);
+                insect.movingSpeed = speed(e);
+                insect.movingFlag = true;
+            }
         }
 
 

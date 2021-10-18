@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(Lab3)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 
 set(SFML_DIR "~/SFML-2.5.1/lib/cmake/SFML")
 set(SFML_INCLUDE_DIR "~/SFML-2.5.1/include")
