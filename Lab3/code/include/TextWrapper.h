@@ -1,6 +1,11 @@
-//
-// Created by ywang3781 on 10/16/2021.
-//
+/*
+Author: Yinuo Wang
+Class: ECE 6122
+Last Date Modified: 10/16/2021
+
+Description:
+ This is the wrapper class of Text and Font classes.
+*/
 
 #ifndef LAB3_TEXTWRAPPER_H
 #define LAB3_TEXTWRAPPER_H
@@ -14,11 +19,8 @@
 using namespace sf;
 using namespace std;
 
-/*
- * Static text wrapper of Text class
- * */
-class TextWrapper {
 
+class TextWrapper {
 public:
     TextWrapper(const string &fontPath, const string &message, const int size, const char color,
                 const float px, const float py) {
@@ -38,12 +40,14 @@ public:
         text.setPosition(px, py);
     }
 
+//  set the current score text
     void setScore(const int scores) {
         stringstream ss;
         ss << "Score: " << scores;
         text.setString(ss.str());
     }
 
+//  draw the text in window
     void draw(RenderWindow &window) {
         window.draw(text);
     }
