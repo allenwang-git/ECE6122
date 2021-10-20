@@ -10,14 +10,19 @@ Description:
 
 #ifndef LAB1_BUZZY_H
 #define LAB1_BUZZY_H
+
 #pragma once
-
 #include "SpriteWrapper.h"
-
-class Buzzy : public SpriteWrapper {
+/*
+ * This is the derived class of SpriteWrapper for buzzy object
+ * */
+class Buzzy : public SpriteWrapper
+{
 public:
+//    Constructor
     Buzzy(const string loadPath, const float px, const float py,
-          const float scale_x, const float scale_y) {
+          const float scale_x, const float scale_y)
+    {
         texture.loadFromFile(loadPath);
         sprite.setTexture(texture);
         sprite.setPosition(px, py);
@@ -31,7 +36,8 @@ public:
  * @param v2f is the other object's position
  * @return true if intersects or false if not
  * */
-    bool intersects(Vector2f v2f) {
+    bool intersects(Vector2f v2f)
+    {
         if (abs(this->getPosition().x - v2f.x) < 75 &&
             abs(this->getPosition().y - v2f.y) < 75)
             return true;
@@ -45,8 +51,10 @@ public:
      * @param woodlanCreatures is the vector contains some SpriteWrapper objects
      * @return true if hit anyone in the vector or false if not
      * */
-    bool hitWoodlandCreature(const vector<SpriteWrapper *> woodlandCreatures) {
-        for (int i = 0; i < woodlandCreatures.size(); ++i) {
+    bool hitWoodlandCreature(const vector<SpriteWrapper *> woodlandCreatures)
+    {
+        for (int i = 0; i < woodlandCreatures.size(); ++i)
+        {
             if (abs(this->getPosition().x - (*woodlandCreatures[i]).getPosition().x) < 75
                 && abs(this->getPosition().y - (*woodlandCreatures[i]).getPosition().y) < 75) {
 //                cout<<this->getPosition().x<<" "<<this->getPosition().y<< " "<<(*woodlandCreatures[i]).getPosition().x<<" "<<(*woodlandCreatures[i]).getPosition().y<<endl;

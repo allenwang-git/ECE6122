@@ -18,14 +18,16 @@ using namespace sf;
 using namespace std;
 
 /*
- * This is the SpriteWrapper class
+ * This is the Wrapper class for Sprite and Texture class
  * */
-class SpriteWrapper {
+class SpriteWrapper
+{
 public:
+//    Constructor
     SpriteWrapper() {};
-
     SpriteWrapper(const string loadPath, const float px, const float py,
-                  const float scale_x, const float scale_y) {
+                  const float scale_x, const float scale_y)
+    {
         texture.loadFromFile(loadPath);
         sprite.setTexture(texture);
         sprite.setPosition(px, py);
@@ -35,49 +37,85 @@ public:
         this->py0 = py;
     }
 
-//  rotation transformation
-    void setRotation(const float angle) {
+/*  set a rotation angular of sprite object
+ * @param angle is the absolute angular of the sprie
+ */
+    void setRotation(const float angle)
+    {
         sprite.setRotation(angle);
     }
-
-    void rotate(const float angle) {
+/*  rotate the sprite from current position
+ * @param angle is the relative angular of the rotation
+ */
+    void rotate(const float angle)
+    {
         sprite.rotate(angle);
     }
-
-    float getRotation() {
+/*
+ * Get the sprite's current angular
+ * @return sprite's current angular
+ */
+    float getRotation()
+    {
         return sprite.getRotation();
     }
-
-//    position transformation
-    void setPosition(const float x, const float y) {
+/*    position transformation
+ *  @param x is the goal position's x coordinate
+ *  @param y is the goal position's y coordinate
+ */
+    void setPosition(const float x, const float y)
+    {
         sprite.setPosition(x, y);
     }
-
-    void setPosition(const Vector2f &pos) {
+/*    position transformation
+ *  @param pos is the goal position
+ */
+    void setPosition(const Vector2f &pos)
+    {
         sprite.setPosition(pos);
     }
-
-    Vector2f getPosition() {
+/*
+ * Get the sprite's current position
+ * @return sprite's current position
+ */
+    Vector2f getPosition()
+    {
         return sprite.getPosition();
     }
 
-//  set object center for transformation
-    void setOrigin(const float x, const float y) {
+/*  set object center for transformation
+ *  @param x is the origin position's x coordinate
+ *  @param y is the origin position's y coordinate
+ */
+    void setOrigin(const float x, const float y)
+    {
         sprite.setOrigin(x, y);
     }
 
-//    set sprite scale
-    void setScale(const float x, const float y) {
+/*    set sprite scale
+ *  @param x is the x direction's scale
+ *  @param y is the y direction's scale
+ */
+    void setScale(const float x, const float y)
+    {
         sprite.setScale(x, y);
     }
 
-//  draw the sprite
-    void draw(RenderWindow &window) {
+/*  draw the sprite
+ * @param window is the RenderWindow object in which the sprite is drawn
+ */
+    void draw(RenderWindow &window)
+    {
         window.draw(sprite);
     }
 
-//  reset the sprite with origin position and angular
-    void reset(const float x, const float y, const float agl) {
+/*  reset the sprite with origin position and angular
+ *  @param x is the original position's x coordinate
+ *  @param y is the original position's y coordinate
+ *  @param agl is the absolute angular of the sprie
+ */
+    void reset(const float x, const float y, const float agl)
+    {
         sprite.setPosition(x, y);
         sprite.setRotation(agl);
     }

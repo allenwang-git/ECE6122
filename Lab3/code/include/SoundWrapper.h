@@ -10,22 +10,27 @@ Description:
 #define LAB1_SOUNDWRAPPER_H
 
 #pragma once
-
 #include <SFML/Audio.hpp>
 #include <string>
 
 using namespace sf;
 using namespace std;
-
-class SoundWrapper {
+/*
+ * The wrapper class for Sound and SoundBuffer class
+ * */
+class SoundWrapper
+{
 public:
-    SoundWrapper(const string loadPath) {
+//    Constructor function
+    SoundWrapper(const string loadPath)
+    {
         sBuffer.loadFromFile(loadPath);
         sound.setBuffer(sBuffer);
     }
 
-//    wrapper to play the sound
-    void play() {
+//    wrapper function of Sound::play() to play the sound
+    void play()
+    {
         sound.play();
     }
 

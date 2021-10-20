@@ -28,7 +28,7 @@ Description:
 
 using namespace sf;
 using namespace std;
-
+// define of some useful constant value
 #define UPPER_BOUND 270.F
 #define LOWER_BOUND 45.F
 #define BUZZY_X 150.F
@@ -36,6 +36,7 @@ using namespace std;
 #define BUZZY_AGL -45.F
 #define COLUMN1 1500
 #define COLUMN2 1750
+
 vector<SpriteWrapper *> mascots, animals, woodlandCol1, woodlandCol2;
 
 /*
@@ -45,9 +46,11 @@ vector<SpriteWrapper *> mascots, animals, woodlandCol1, woodlandCol2;
  * @param i is a random number from random generator
  * @return the initial position
  * */
-Vector2f getInitPos(const int i) {
+Vector2f getInitPos(const int i)
+{
     Vector2f initPos;
-    switch (i) {
+    switch (i)
+    {
         case 0:
             initPos.x = COLUMN1;
             initPos.y = 300;
@@ -97,9 +100,11 @@ Vector2f getInitPos(const int i) {
  * This function is used to set animals' position randomly
  * at the begining of the game
  * */
-void resetImage() {
+void resetImage()
+{
     vector<int> vec;
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10; ++i)
+    {
         vec.push_back(i);
     }
     random_device ri;
@@ -107,20 +112,24 @@ void resetImage() {
     uniform_int_distribution<int> pos(0, 9);
     int n = vec.size();
 //    generate new position
-    do {
-        for (int i = 0; i < n; i++) {
+    do
+    {
+        for (int i = 0; i < n; i++)
+        {
             int index = i + pos(e) % (n - i);
             swap(vec[index], vec[i]);
         }
     } while (!(vec[0] < 5 && vec[1] >= 5));
 //    set new position
-    for (int i = 0; i < mascots.size(); i++) {
+    for (int i = 0; i < mascots.size(); i++)
+    {
         (*mascots[i]).setPosition(getInitPos(vec[i]));
         (*mascots[i]).setRotation(0.f);
         (*mascots[i]).posTag = vec[i];
         (*mascots[i]).hitFlag = false;
     }
-    for (int j = 0; j < animals.size(); j++) {
+    for (int j = 0; j < animals.size(); j++)
+    {
         (*animals[j]).setPosition(getInitPos(vec[j + 2]));
         (*animals[j]).setRotation(0.f);
         (*animals[j]).posTag = vec[j + 2];
@@ -129,9 +138,11 @@ void resetImage() {
 //    set woodland animals
     woodlandCol1.clear();
     woodlandCol2.clear();
-    for (int i = 0; i < animals.size(); ++i) {
+    for (int i = 0; i < animals.size(); ++i)
+    {
 //        unicorn doesn't belong to woodland
-        if (i != 4) {
+        if (i != 4)
+        {
             if ((*animals[i]).posTag < 5)
                 woodlandCol1.push_back(animals[i]);
             else if ((*animals[i]).posTag >= 5)
@@ -143,7 +154,8 @@ void resetImage() {
 /*
  * This is the main function to handle this game
  * */
-int main() {
+int main()
+{
 //    create the window
     VideoMode vm(960, 540);
     RenderWindow window(vm, "Buzzy's Revenge");
@@ -241,22 +253,25 @@ int main() {
     int lives = 5;
     int score = 99;
 
-    while (window.isOpen()) {
+    while (window.isOpen())
+    {
         /******************************
          Handle the player's input
          ******************************/
         Event event;
-        while (window.pollEvent(event)) {
+        while (window.pollEvent(event))
+        {
             //        exit the game
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::KeyPressed) {
+            if (event.type == sf::Event::KeyPressed)
+            {
                 //        exit the game
-                if (event.key.code == sf::Keyboard::Escape) {
+                if (event.key.code == sf::Keyboard::Escape)
                     window.close();
-                }
                 //        start the game
-                if (event.key.code == Keyboard::Enter) {
+                if (event.key.code == Keyboard::Enter)
+                {
                     pausedFlag = false;
                     loseLife = false;
                     column2 = true;
@@ -270,23 +285,29 @@ int main() {
                     powerBar.setSize(power);
                     tScore.setScore(score);
                 }
-                if (!pausedFlag) {
+//                Start the new game
+                if (!pausedFlag)
+                {
                     //        change buzz initial launch power
-                    if (event.key.code == Keyboard::Space) {
-                        if (power < powerBar.barLength) {
+                    if (event.key.code == Keyboard::Space)
+                    {
+                        if (power < powerBar.barLength)
+                        {
                             power += 5.f;
                             powerBar.setSize(power);
                         }
                     }
                     //        change buzz initial launch direction
-                    if (Keyboard::isKeyPressed(Keyboard::Up)) {
+                    if (Keyboard::isKeyPressed(Keyboard::Up))
+                    {
                         if ((buzzy.getRotation() <= 360.f && buzzy.getRotation() > UPPER_BOUND)
                             || (buzzy.getRotation() >= 0.f && buzzy.getRotation() <= LOWER_BOUND))
                             buzzy.rotate(-5.f);
                         else
                             buzzy.setRotation(round(buzzy.getRotation()) + 5.f);
                     }
-                    if (Keyboard::isKeyPressed(Keyboard::Down)) {
+                    if (Keyboard::isKeyPressed(Keyboard::Down))
+                    {
                         if ((buzzy.getRotation() <= 360.f && buzzy.getRotation() >= UPPER_BOUND)
                             || (buzzy.getRotation() >= 0.f && buzzy.getRotation() < LOWER_BOUND))
                             buzzy.rotate(5.f);
@@ -295,9 +316,11 @@ int main() {
                     }
                 }
             }
-            if (event.type == Event::KeyReleased && !pausedFlag) {
+            if (event.type == Event::KeyReleased && !pausedFlag)
+            {
                 //    launch the buzzy to begin a round
-                if (event.key.code == sf::Keyboard::Space) {
+                if (event.key.code == sf::Keyboard::Space)
+                {
                     clock.restart();
                     buzzyMotion.reset();
                     buzzyMotion.initialize(buzzy.px0, buzzy.py0, buzzy.movingSpeed, buzzy.getRotation());
@@ -310,7 +333,8 @@ int main() {
 //      set the buzz speed and update powerbar
         buzzy.movingSpeed = power * 2.f + 600;
 //      Game over, prepare to restart
-        if (lives == 0) {
+        if (lives == 0)
+        {
             gameOver.play();
             pausedFlag = true;
             loseLife = false;
@@ -326,7 +350,8 @@ int main() {
             tScore.setScore(score);
         }
 //      Win the game, prepare to restart
-        if (!column1 && !column2 && lives > 0 && !col1Spin && !col2Spin && !buzzy.spinningFlag) {
+        if (!column1 && !column2 && lives > 0 && !col1Spin && !col2Spin && !buzzy.spinningFlag)
+        {
             win.play();
             pausedFlag = true;
             loseLife = false;
@@ -344,15 +369,18 @@ int main() {
         /****************************
          Update the screen
         ****************************/
-        if (!pausedFlag) {
+        if (!pausedFlag)
+        {
             Time dt = clock.restart();
             //   Moving the bee randomly
             random_device rd;
             default_random_engine e(rd());
-            if (insect.movingFlag) {
+            if (insect.movingFlag)
+            {
                 int height = insect.getPosition().y;
                 uniform_int_distribution<int> deltaH(0, 2);
-                switch (deltaH(e)) {
+                switch (deltaH(e))
+                {
                     case 0:
                         break;
                     case 1:
@@ -365,7 +393,9 @@ int main() {
                 insect.setPosition(insect.getPosition().x - dt.asSeconds() * insect.movingSpeed, height);
                 if (insect.getPosition().x < -100. || insect.getPosition().y < 0. || insect.getPosition().y > 1080.)
                     insect.movingFlag = false;
-            } else {
+            }
+            else
+            {
                 uniform_int_distribution<int> h(200, 800);
                 insect.setPosition(1920, h(e));
                 uniform_int_distribution<int> speed(200, 400);
@@ -373,16 +403,19 @@ int main() {
                 insect.movingFlag = true;
             }
 //            begin a new round
-            if (!roundOver) {
+            if (!roundOver)
+            {
                 buzzyMotion.t += dt.asSeconds();
                 //   Moving the buzzy
-                if (buzzy.movingFlag) {
+                if (buzzy.movingFlag)
+                {
                     buzzy.setPosition(buzzyMotion.getXPosition(), buzzyMotion.getYPosition());
                     buzzy.setRotation(buzzyMotion.getVelocityDirection());
 //                buzzyMotion.show();
                 }
                 //   hit Tiger
-                if (!evilTiger.hitFlag && buzzy.intersects(evilTiger.getPosition())) {
+                if (!evilTiger.hitFlag && buzzy.intersects(evilTiger.getPosition()))
+                {
                     hit.play();
                     score += 25;
                     tScore.setScore(score);
@@ -397,7 +430,8 @@ int main() {
                     buzzy.spinningFlag = true;
                 }
                     //   hit Bulldog
-                else if (!evilBulldog.hitFlag && buzzy.intersects(evilBulldog.getPosition())) {
+                else if (!evilBulldog.hitFlag && buzzy.intersects(evilBulldog.getPosition()))
+                {
                     hit.play();
                     score += 25;
                     tScore.setScore(score);
@@ -412,7 +446,8 @@ int main() {
                     buzzy.spinningFlag = true;
                 }
                     //    hit Insect
-                else if (!insect.hitFlag && buzzy.intersects(insect.getPosition())) {
+                else if (!insect.hitFlag && buzzy.intersects(insect.getPosition()))
+                {
                     score += (25 * 3);
                     hit.play();
                     tScore.setScore(score);
@@ -422,33 +457,45 @@ int main() {
                     buzzy.spinningFlag = true;
                 }
                     //     hit Unicorn
-                else if (!unicorn.hitFlag && buzzy.intersects(unicorn.getPosition())) {
+                else if (!unicorn.hitFlag && buzzy.intersects(unicorn.getPosition()))
+                {
                     if (lives < 5) lives += 1;
                     unicorn.hitFlag = true;
                     hit.play();
-//                    drop down the animals above unicorn
-                    if (unicorn.posTag < 5) {
-                        for (auto w: woodlandCol1) {
-                            if ((*w).posTag < unicorn.posTag) {
+//                    drop down the animals above unicorn by one
+                    if (unicorn.posTag < 5)
+                    {
+                        for (auto w: woodlandCol1)
+                        {
+                            if ((*w).posTag < unicorn.posTag)
+                            {
                                 (*w).posTag++;
                                 (*w).setPosition((*w).getPosition().x, (*w).getPosition().y + 150);
                             }
                         }
-                        for (auto m: mascots) {
-                            if ((*m).posTag < unicorn.posTag) {
+                        for (auto m: mascots)
+                        {
+                            if ((*m).posTag < unicorn.posTag)
+                            {
                                 (*m).posTag++;
                                 (*m).setPosition((*m).getPosition().x, (*m).getPosition().y + 150);
                             }
                         }
-                    } else {
-                        for (auto w: woodlandCol2) {
-                            if ((*w).posTag < unicorn.posTag) {
+                    }
+                    else
+                    {
+                        for (auto w: woodlandCol2)
+                        {
+                            if ((*w).posTag < unicorn.posTag)
+                            {
                                 (*w).posTag++;
                                 (*w).setPosition((*w).getPosition().x, (*w).getPosition().y + 150);
                             }
                         }
-                        for (auto m: mascots) {
-                            if ((*m).posTag < unicorn.posTag) {
+                        for (auto m: mascots)
+                        {
+                            if ((*m).posTag < unicorn.posTag)
+                            {
                                 (*m).posTag++;
                                 (*m).setPosition((*m).getPosition().x, (*m).getPosition().y + 150);
                             }
@@ -460,7 +507,8 @@ int main() {
                 }
 //                hit woodland creatures
                 else if ((column1 && buzzy.hitWoodlandCreature(woodlandCol1))
-                         || (column2 && buzzy.hitWoodlandCreature(woodlandCol2))) {
+                         || (column2 && buzzy.hitWoodlandCreature(woodlandCol2)))
+                {
                     if (lives > 0) lives -= 1;
                     hit.play();
                     loseLife = true;
@@ -470,7 +518,8 @@ int main() {
                 }
 //              fly beyond the window
                 else if ((buzzy.getPosition().x > 1900 || buzzy.getPosition().x < 0
-                          || buzzy.getPosition().y > 1050 || buzzy.getPosition().y < 0)) {
+                          || buzzy.getPosition().y > 1050 || buzzy.getPosition().y < 0))
+                {
                     if (lives > 0) lives -= 1;
                     loseLife = true;
                     buzzy.reset(BUZZY_X, BUZZY_Y, BUZZY_AGL);
@@ -479,55 +528,72 @@ int main() {
                 }
             }
 //            spin the buzzy to bottom before resetting
-            if (buzzy.spinningFlag && buzzy.getPosition().y <= 1080) {
+            if (buzzy.spinningFlag && buzzy.getPosition().y <= 1080)
+            {
                 buzzy.setPosition(buzzy.getPosition().x, buzzy.getPosition().y + 0.5f);
                 buzzy.rotate(0.5f);
-            } else if (buzzy.spinningFlag && buzzy.getPosition().y > 1080) {
+            }
+            else if (buzzy.spinningFlag && buzzy.getPosition().y > 1080)
+            {
                 buzzy.spinningFlag = false;
                 buzzy.reset(BUZZY_X, BUZZY_Y, BUZZY_AGL);
             }
 //            spin the column to bottom before disappearing
-            if (!column1 && (*woodlandCol1[0]).getPosition().y <= 1080) {
+            if (!column1 && (*woodlandCol1[0]).getPosition().y <= 1080)
+            {
                 col1Spin = true;
-                for (auto w: woodlandCol1) {
+                for (auto w: woodlandCol1)
+                {
                     (*w).setPosition((*w).getPosition().x, (*w).getPosition().y + 0.5f);
                     (*w).rotate(0.5f);
                 }
-                if (unicorn.posTag < 5) {
+                if (unicorn.posTag < 5)
+                {
                     unicorn.setPosition(unicorn.getPosition().x, unicorn.getPosition().y + 0.5f);
                     unicorn.rotate(0.5f);
                 }
-                if (evilBulldog.posTag < 5) {
+                if (evilBulldog.posTag < 5)
+                {
                     evilBulldog.setPosition(evilBulldog.getPosition().x, evilBulldog.getPosition().y + 0.5f);
                     evilBulldog.rotate(0.5f);
                 }
-                if (evilTiger.posTag < 5) {
+                if (evilTiger.posTag < 5)
+                {
                     evilTiger.setPosition(evilTiger.getPosition().x, evilTiger.getPosition().y + 0.5f);
                     evilTiger.rotate(0.5f);
                 }
-            } else if (!column1 && (*woodlandCol1[0]).getPosition().y > 1080) {
+            }
+            else if (!column1 && (*woodlandCol1[0]).getPosition().y > 1080)
+            {
                 col1Spin = false;
             }
 
-            if (!column2 && (*woodlandCol2[0]).getPosition().y <= 1080) {
+            if (!column2 && (*woodlandCol2[0]).getPosition().y <= 1080)
+            {
                 col2Spin = true;
-                for (auto w: woodlandCol2) {
+                for (auto w: woodlandCol2)
+                {
                     (*w).setPosition((*w).getPosition().x, (*w).getPosition().y + 0.5f);
                     (*w).rotate(0.5f);
                 }
-                if (unicorn.posTag >= 5) {
+                if (unicorn.posTag >= 5)
+                {
                     unicorn.setPosition(unicorn.getPosition().x, unicorn.getPosition().y + 0.5f);
                     unicorn.rotate(0.5f);
                 }
-                if (evilBulldog.posTag >= 5) {
+                if (evilBulldog.posTag >= 5)
+                {
                     evilBulldog.setPosition(evilBulldog.getPosition().x, evilBulldog.getPosition().y + 0.5f);
                     evilBulldog.rotate(0.5f);
                 }
-                if (evilTiger.posTag >= 5) {
+                if (evilTiger.posTag >= 5)
+                {
                     evilTiger.setPosition(evilTiger.getPosition().x, evilTiger.getPosition().y + 0.5f);
                     evilTiger.rotate(0.5f);
                 }
-            } else if (!column2 && (*woodlandCol2[0]).getPosition().y > 1080) {
+            }
+            else if (!column2 && (*woodlandCol2[0]).getPosition().y > 1080)
+            {
                 col2Spin = false;
             }
         }
@@ -538,17 +604,17 @@ int main() {
         window.clear();
 
         background.draw(window);
+        buzzy.draw(window);
         if (!insect.hitFlag)
             insect.draw(window);
-        buzzy.draw(window);
 
-        for (int i = 0; i < lives; ++i) {
+        for (int i = 0; i < lives; ++i)
             buzzy_lifes[i].draw(window);
-        }
-        if (column1 || col1Spin) {
-            for (int i = 0; i < woodlandCol1.size(); ++i) {
+
+        if (column1 || col1Spin)
+        {
+            for (int i = 0; i < woodlandCol1.size(); ++i)
                 (*woodlandCol1[i]).draw(window);
-            }
             if (unicorn.posTag < 5 && !unicorn.hitFlag)
                 unicorn.draw(window);
             if (evilBulldog.posTag < 5)
@@ -556,10 +622,10 @@ int main() {
             if (evilTiger.posTag < 5)
                 evilTiger.draw(window);
         }
-        if (column2 || col2Spin) {
-            for (int i = 0; i < woodlandCol2.size(); ++i) {
+        if (column2 || col2Spin)
+        {
+            for (int i = 0; i < woodlandCol2.size(); ++i)
                 (*woodlandCol2[i]).draw(window);
-            }
             if (unicorn.posTag >= 5 && !unicorn.hitFlag)
                 unicorn.draw(window);
             if (evilTiger.posTag >= 5)
@@ -572,7 +638,8 @@ int main() {
         tLives.draw(window);
         tPower.draw(window);
         tScore.draw(window);
-        if (pausedFlag) {
+        if (pausedFlag)
+        {
             tTitle.draw(window);
             tRestart.draw(window);
             tExit.draw(window);

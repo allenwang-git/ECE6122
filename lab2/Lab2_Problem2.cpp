@@ -25,7 +25,8 @@ using namespace std;
  * @param validOutput output the valid number
  * @return true for valid input and false for invalid input
  */
-bool isValidInput(const string strInput, unsigned long &validOutput) {
+bool isValidInput(const string strInput, unsigned long &validOutput)
+{
     unsigned long tmpValid;
 //    check the input is a number or not
     for (auto chInput: strInput)
@@ -52,7 +53,8 @@ bool isValidInput(const string strInput, unsigned long &validOutput) {
  * @param argc the number of command line arguments
  * @param argv the array of arguments
  * */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     // Create a file for output result
     fstream outputFile("Lab2Prob2.txt", ios::out | ios::trunc);
     outputFile.precision(6);
