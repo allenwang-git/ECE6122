@@ -28,8 +28,10 @@ double currentAVG, prevAVG = 0, coverageSteps = 0;
  *
  * @return true if finished and false if not
  * */
-bool antFinish(const bool high[]) {
-    for (int i = 0; i < 5; i++) {
+bool antFinish(const bool high[])
+{
+    for (int i = 0; i < 5; i++)
+    {
         if (!high[i]) return false;
     }
     return true;
@@ -39,13 +41,15 @@ bool antFinish(const bool high[]) {
  * This function is the multi-threads function to run the task many times
  * @param n is the number of times each thread need to run
  * */
-void antRunNRounds(int n) {
+void antRunNRounds(int n)
+{
 //  use Random Class in c++11 to generate random number, using tid as unique seed
     unsigned seed = hash<thread::id>()(this_thread::get_id());
     default_random_engine e(seed);
     uniform_int_distribution<int> u(1, 4);
     int count(0);
-    while (count < n) {
+    while (count < n)
+    {
         ++count;
         ++currentTimes;
         int ant_x = 2, ant_y = 2, counter = 0;
@@ -58,7 +62,8 @@ void antRunNRounds(int n) {
             int next_x, next_y;
             do {// generate next grid
                 next_y = next_x = 0;
-                switch (u(e)) {
+                switch (u(e))
+                {
                     case 1:
                         next_y++;
                         break;
@@ -80,12 +85,14 @@ void antRunNRounds(int n) {
             ant_y += next_y;
 
 //      Condition that ant will take a seed
-            if (ant_y == 0 && !seedFlag && lowSeedFlag[ant_x]) {
+            if (ant_y == 0 && !seedFlag && lowSeedFlag[ant_x])
+            {
                 seedFlag = true;
                 lowSeedFlag[ant_x] = false;
             }
 //      Condition that ant will drop a seed
-            if (ant_y == 4 && seedFlag && !highSeedFlag[ant_x]) {
+            if (ant_y == 4 && seedFlag && !highSeedFlag[ant_x])
+            {
                 seedFlag = false;
                 highSeedFlag[ant_x] = true;
             }
@@ -98,8 +105,9 @@ void antRunNRounds(int n) {
         if (currentAVG == prevAVG) equalTimes++;
         else equalTimes = 0;
         prevAVG = currentAVG;
-        if (equalTimes == 10) {
-            coverageTimes = equalTimes;
+        if (equalTimes == 10)
+        {
+            coverageTimes = currentTimes;
             coverageSteps = currentAVG;
         }
     }
@@ -110,7 +118,8 @@ void antRunNRounds(int n) {
  * output final result to the ProblemOne.txt
  *
  * */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     //   Create a file for output result
     fstream outputFile("ProblemOne.txt", ios::out | ios::trunc);
     outputFile.precision(6);
@@ -132,15 +141,17 @@ int main(int argc, char *argv[]) {
     average = steps / (double) runTimes;
     cout << "Average Steps: " << average << endl;
     //    Output prime factors to file
-    if (outputFile.good()) {
+    if (outputFile.good())
+    {
         outputFile << "Number of threads created: " << nthreads << endl << endl;
         outputFile << "Expected number of steps: " << average << endl << endl;
         if (coverageSteps != 0)
-            outputFile << "Total number of runs needed for solution convergence: " << coverageTimes
-                       << " " << coverageSteps << endl;
+            outputFile << "Total number of runs needed for solution convergence: " << coverageTimes << endl;
         else
             outputFile << "Total number of runs needed for solution convergence: " << runTimes << endl;
-    } else {
+    }
+    else
+    {
         cout << "[ECE6122-Lab2-1] Can not open output file.\n";
     }
     return 0;

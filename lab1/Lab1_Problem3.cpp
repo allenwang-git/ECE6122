@@ -207,23 +207,25 @@ int main(int argc, char* argv[])
     //    Parse parameters from command line and check it
     if (argc != 2)
     {
+        strOutput = "Invalid Input";
         cout << "[ECE6122-Lab1-3] Please input a X coordination(cm) from -10 to 10 when run this program.\n";
     }
     else
     {
         stringstream(argv[1]) >> tmpXPosInput;
-    }
-    Reflection refObj(tmpXPosInput);
+        Reflection refObj(tmpXPosInput);
 
-    if (refObj.xPosABInput > -10. && refObj.xPosABInput < 10.){
-        refObj.getReflectioinTimes(); // begin the reflection
-        strOutput = to_string(refObj.reflectTimes); // get the reflection times
+        if (refObj.xPosABInput > -10. && refObj.xPosABInput < 10.){
+            refObj.getReflectioinTimes(); // begin the reflection
+            strOutput = to_string(refObj.reflectTimes); // get the reflection times
+        }
+        else
+        {
+            strOutput = "Invalid Input";
+            cout << "[ECE6122-Lab1-3] Invalid initial reflection's x location, please change a location.\n";
+        }
     }
-    else
-    {
-        strOutput = "Invalid Input";
-        cout << "[ECE6122-Lab1-3] Invalid initial reflection's x location, please change a location.\n";
-    }
+
     //    Output prime factors to file
     if (outputFile.good())
     {

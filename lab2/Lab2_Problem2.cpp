@@ -28,15 +28,19 @@ using namespace std;
 bool isValidInput(const string strInput, unsigned long &validOutput) {
     unsigned long tmpValid;
 //    check the input is a number or not
-    for (auto chInput: strInput) {
+    for (auto chInput: strInput)
+    {
         if (!isdigit(chInput))
             return false;
     }
 //    check the number is valid or not
     stringstream(strInput) >> tmpValid;
-    if (tmpValid < 1) {
+    if (tmpValid < 1)
+    {
         return false;
-    } else {
+    }
+    else
+    {
         validOutput = tmpValid;
         return true;
     }
@@ -63,24 +67,31 @@ int main(int argc, char *argv[]) {
     if (argc != 2) //  check the number of arguments
     {
         cout << "[ECE6122-Lab2-2] Please input one and only one argument for this program.\n";
+        return 1;
     }
 //    Run the parallel computing if input is valid
-    if (isValidInput(argv[1], N)) {
+    if (isValidInput(argv[1], N))
+    {
         delta_x = (upperBound - lowerBound) / N;
         // Allocate the for loop assignment to several threads
 #pragma omp parallel for reduction (+:integralValue)
-        for (unsigned long i = 1; i <= N; ++i) {
+        for (long i = 1; i <= N; ++i)
+        {
             F_x = 14. * exp(7. * (lowerBound + (i - 0.5) * delta_x));
             integralValue += (delta_x * F_x);
         }
-    } else {
+    } else
+    {
         cout << "[ECE6122-Lab2-2] Please input a WHOLE NUMBER for this program.\n";
     }
 
     //    Output prime factors to file
-    if (outputFile.good()) {
+    if (outputFile.good())
+    {
         outputFile << integralValue;
-    } else {
+    }
+    else
+    {
         cout << "[ECE6122-Lab2-2] Can not open output file.\n";
     }
     return 0;
