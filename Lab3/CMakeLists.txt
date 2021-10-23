@@ -3,9 +3,9 @@ project(Lab3)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SFML_DIR "~/SFML-2.5.1/lib/cmake/SFML")
-set(SFML_INCLUDE_DIR "~/SFML-2.5.1/include")
-set(SFML_LIBRARY_DIR "~/SFML-2.5.1/lib")
+set(SFML_DIR "./SFML-2.5.1/lib/cmake/SFML")
+set(SFML_INCLUDE_DIR "./SFML-2.5.1/include")
+set(SFML_LIBRARY_DIR "./SFML-2.5.1/lib")
 
 include_directories(fonts)
 include_directories(graphics)

@@ -92,7 +92,8 @@ private:
     double theta0, theta;
 
 //  compute the initial sub-velocity
-    void setSubVelocity() {
+    void setSubVelocity()
+    {
         vx0 = v0 * cos(theta0 / 180 * 3.14);
         vy0 = v0 * sin(theta0 / 180 * 3.14);
     }
