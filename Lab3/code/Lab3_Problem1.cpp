@@ -40,6 +40,7 @@ int main()
     buzzy.setOrigin(200, 40);
     SpriteWrapper insect("../graphics/insect.png", 1600, 200, 1.5f, 1.5f);
     insect.setScale(-1.5, 1.5);
+    insect.setOrigin(25, 25);
     vector<SpriteWrapper> buzzy_lifes;
     SpriteWrapper life1("../graphics/buzzy_life.png", 170 + 0 * 60, 50, 0.5f, 0.5f);
     buzzy_lifes.push_back(life1);
