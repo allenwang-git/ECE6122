@@ -111,7 +111,6 @@ int main()
 
 // Variables to control time itself
     Clock clock;
-    long long count=0;
 // Game main loop
     while (window.isOpen())
     {
@@ -179,8 +178,7 @@ int main()
 //      set the buzz speed and update powerbar
         buzzy.movingSpeed = power * 2.f + 600;
 //      Game over, prepare to restart
-        if (lives == 0)
-        {
+        if (lives == 0 && !buzzy.spinningFlag) {
             gameOverFlag = true;
             gameOver.play();
             initializeGame();
@@ -202,9 +200,6 @@ int main()
             powerBar.setSize(power);
             tScore.setScore(score);
         }
-        count++;
-        if (count%1000 ==0)
-            cout<<"c1-"<<column1<<" c1spin-"<<col1Spin<<" c2-"<<column2<<" c2spin-"<<col2Spin<<endl;
 
         /****************************
          Update the screen
