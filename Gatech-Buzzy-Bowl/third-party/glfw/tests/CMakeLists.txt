@@ -5,31 +5,31 @@ include_directories("${GLFW_SOURCE_DIR}/deps")
 
 if (MATH_LIBRARY)
     link_libraries("${MATH_LIBRARY}")
-endif ()
+endif()
 
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif ()
+endif()
 
 set(GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h"
-        "${GLFW_SOURCE_DIR}/deps/glad_gl.c")
+            "${GLFW_SOURCE_DIR}/deps/glad_gl.c")
 set(GLAD_VULKAN "${GLFW_SOURCE_DIR}/deps/glad/vulkan.h"
-        "${GLFW_SOURCE_DIR}/deps/glad_vulkan.c")
+                "${GLFW_SOURCE_DIR}/deps/glad_vulkan.c")
 set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
-        "${GLFW_SOURCE_DIR}/deps/getopt.c")
+           "${GLFW_SOURCE_DIR}/deps/getopt.c")
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
-        "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
+                "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
 if (${CMAKE_VERSION} VERSION_EQUAL "3.1.0" OR
-        ${CMAKE_VERSION} VERSION_GREATER "3.1.0")
+    ${CMAKE_VERSION} VERSION_GREATER "3.1.0")
     set(CMAKE_C_STANDARD 99)
-else ()
+else()
     # Remove this fallback when removing support for CMake version less than 3.1
     add_compile_options("$<$<C_COMPILER_ID:AppleClang>:-std=c99>"
-            "$<$<C_COMPILER_ID:Clang>:-std=c99>"
-            "$<$<C_COMPILER_ID:GNU>:-std=c99>")
+                        "$<$<C_COMPILER_ID:Clang>:-std=c99>"
+                        "$<$<C_COMPILER_ID:GNU>:-std=c99>")
 
-endif ()
+endif()
 
 add_executable(clipboard clipboard.c ${GETOPT} ${GLAD_GL})
 add_executable(events events.c ${GETOPT} ${GLAD_GL})
@@ -58,21 +58,21 @@ target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}")
 if (RT_LIBRARY)
     target_link_libraries(empty "${RT_LIBRARY}")
     target_link_libraries(threads "${RT_LIBRARY}")
-endif ()
+endif()
 
 set(GUI_ONLY_BINARIES empty gamma icon inputlag joysticks opacity tearing
-        threads timeout title triangle-vulkan windows)
+    threads timeout title triangle-vulkan windows)
 set(CONSOLE_BINARIES clipboard events msaa glfwinfo iconify monitors reopen
-        cursor)
+                     cursor)
 
 set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
-        FOLDER "GLFW3/Tests")
+                      FOLDER "GLFW3/Tests")
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables
     set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
-            LINK_FLAGS "/ENTRY:mainCRTStartup")
-endif ()
+                          LINK_FLAGS "/ENTRY:mainCRTStartup")
+endif()
 
 if (APPLE)
     set_target_properties(empty PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Empty Event")
@@ -87,8 +87,8 @@ if (APPLE)
     set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
     set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
-            MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
-            MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION}
-            MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/MacOSXBundleInfo.plist.in")
-endif ()
+                          MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
+                          MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION}
+                          MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/MacOSXBundleInfo.plist.in")
+endif()
 

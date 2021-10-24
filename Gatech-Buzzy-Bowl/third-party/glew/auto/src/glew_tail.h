@@ -26,14 +26,8 @@ VERSION_MICRO GLEW_VERSION_MICRO_STRING
 */
 
 /* API */
-GLEWAPI GLenum
-
-GLEWAPIENTRY glewInit(void);
-
-GLEWAPI GLboolean
-
-GLEWAPIENTRY glewIsSupported(const char *name);
-
+GLEWAPI GLenum GLEWAPIENTRY glewInit (void);
+GLEWAPI GLboolean GLEWAPIENTRY glewIsSupported (const char *name);
 #define glewIsExtensionSupported(x) glewIsSupported(x)
 
 #ifndef GLEW_GET_VAR
@@ -44,20 +38,10 @@ GLEWAPIENTRY glewIsSupported(const char *name);
 #define GLEW_GET_FUN(x) x
 #endif
 
-GLEWAPI GLboolean
-glewExperimental;
-GLEWAPI GLboolean
-
-GLEWAPIENTRY glewGetExtension(const char *name);
-
-GLEWAPI const GLubyte
-*
-GLEWAPIENTRY glewGetErrorString(GLenum
-error);
-GLEWAPI const GLubyte
-*
-GLEWAPIENTRY glewGetString(GLenum
-name);
+GLEWAPI GLboolean glewExperimental;
+GLEWAPI GLboolean GLEWAPIENTRY glewGetExtension (const char *name);
+GLEWAPI const GLubyte * GLEWAPIENTRY glewGetErrorString (GLenum error);
+GLEWAPI const GLubyte * GLEWAPIENTRY glewGetString (GLenum name);
 
 #ifdef __cplusplus
 }

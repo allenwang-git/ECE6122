@@ -9,10 +9,10 @@
 
 if (NOT WIN32)
 
-    find_package(PkgConfig)
-    pkg_check_modules(PKG_OSMESA QUIET osmesa)
+  find_package (PkgConfig)
+  pkg_check_modules (PKG_OSMESA QUIET osmesa)
 
-    set(OSMESA_INCLUDE_DIR ${PKG_OSMESA_INCLUDE_DIRS})
-    set(OSMESA_LIBRARIES ${PKG_OSMESA_LIBRARIES})
+  set (OSMESA_INCLUDE_DIR ${PKG_OSMESA_INCLUDE_DIRS})
+  set (OSMESA_LIBRARIES   ${PKG_OSMESA_LIBRARIES})
 
 endif ()

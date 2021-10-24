@@ -14,8 +14,8 @@ class GlewConan(ConanFile):
     settings = "os", "arch", "build_type", "compiler"
     options = {"shared": [True, False]}
     default_options = "shared=False"
-    url = "http://github.com/nigels-com/glew"
-    license = "https://github.com/nigels-com/glew#copyright-and-licensing"
+    url="http://github.com/nigels-com/glew"
+    license="https://github.com/nigels-com/glew#copyright-and-licensing"
     if version == "master":
         if os.path.isfile("Makefile"):
             exports_sources = "*"
@@ -23,7 +23,7 @@ class GlewConan(ConanFile):
             exports_sources = os.sep.join(["..", "..", "*"])
     else:
         exports = "FindGLEW.cmake"
-
+        
     def system_requirements(self):
         if os_info.is_linux:
             if os_info.with_apt:
@@ -43,8 +43,7 @@ class GlewConan(ConanFile):
                     installer.install("libGL-devel")
                 installer.install("mesa-libGLU-devel")
             else:
-                self.output.warn(
-                    "Could not determine Linux package manager, skipping system requirements installation.")
+                self.output.warn("Could not determine Linux package manager, skipping system requirements installation.")
 
     def configure(self):
         del self.settings.compiler.libcxx
@@ -52,15 +51,13 @@ class GlewConan(ConanFile):
     def source(self):
         if self.version != "master":
             zip_name = "%s.tgz" % self.source_directory
-            download("https://sourceforge.net/projects/glew/files/glew/%s/%s/download" % (self.version, zip_name),
-                     zip_name)
+            download("https://sourceforge.net/projects/glew/files/glew/%s/%s/download" % (self.version, zip_name), zip_name)
             unzip(zip_name)
             os.unlink(zip_name)
 
     def build(self):
         if self.settings.os == "Windows" and self.version == "master":
-            raise ConanException(
-                "Trunk builds are not supported on Windows (cannot build directly from master git repository).")
+            raise ConanException("Trunk builds are not supported on Windows (cannot build directly from master git repository).")
 
         if self.settings.compiler == "Visual Studio":
             env = VisualStudioBuildEnvironment(self)
@@ -88,7 +85,7 @@ class GlewConan(ConanFile):
         find_glew_dir = "%s/build/conan" % self.conanfile_directory if self.version == "master" else "."
         self.copy("FindGLEW.cmake", ".", find_glew_dir, keep_path=False)
         self.copy("include/*", ".", "%s" % self.source_directory, keep_path=True)
-        self.copy("%s/license*" % self.source_directory, dst="licenses", ignore_case=True, keep_path=False)
+        self.copy("%s/license*" % self.source_directory, dst="licenses",  ignore_case=True, keep_path=False)
 
         if self.settings.os == "Windows":
             if self.settings.compiler == "Visual Studio":
@@ -135,7 +132,7 @@ class GlewConan(ConanFile):
                         self.cpp_info.exelinkflags.append('-NODEFAULTLIB:LIBCMT')
             else:
                 self.cpp_info.libs.append("opengl32")
-
+                
         else:
             self.cpp_info.libs = ['GLEW']
             if self.settings.os == "Macos":

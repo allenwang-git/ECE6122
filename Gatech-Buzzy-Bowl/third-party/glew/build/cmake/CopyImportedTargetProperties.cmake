@@ -37,52 +37,52 @@
 function(copy_imported_target_properties src_target dest_target)
 
     set(config_dependent_props
-            IMPORTED_IMPLIB
-            IMPORTED_LINK_DEPENDENT_LIBRARIES
-            IMPORTED_LINK_INTERFACE_LANGUAGES
-            IMPORTED_LINK_INTERFACE_LIBRARIES
-            IMPORTED_LINK_INTERFACE_MULTIPLICITY
-            IMPORTED_LOCATION
-            IMPORTED_NO_SONAME
-            IMPORTED_SONAME
-            )
+        IMPORTED_IMPLIB
+        IMPORTED_LINK_DEPENDENT_LIBRARIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES
+        IMPORTED_LINK_INTERFACE_LIBRARIES
+        IMPORTED_LINK_INTERFACE_MULTIPLICITY
+        IMPORTED_LOCATION
+        IMPORTED_NO_SONAME
+        IMPORTED_SONAME
+    )
 
     # copy configuration-independent properties
-    foreach (prop
-            ${config_dependent_props}
-            IMPORTED_CONFIGURATIONS
-            INTERFACE_AUTOUIC_OPTIONS
-            INTERFACE_COMPILE_DEFINITIONS
-            INTERFACE_COMPILE_FEATURES
-            INTERFACE_COMPILE_OPTIONS
-            INTERFACE_INCLUDE_DIRECTORIES
-            INTERFACE_LINK_LIBRARIES
-            INTERFACE_POSITION_INDEPENDENT_CODE
-            INTERFACE_SOURCES
-            INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
-            )
+    foreach(prop
+        ${config_dependent_props}
+        IMPORTED_CONFIGURATIONS
+        INTERFACE_AUTOUIC_OPTIONS
+        INTERFACE_COMPILE_DEFINITIONS
+        INTERFACE_COMPILE_FEATURES
+        INTERFACE_COMPILE_OPTIONS
+        INTERFACE_INCLUDE_DIRECTORIES
+        INTERFACE_LINK_LIBRARIES
+        INTERFACE_POSITION_INDEPENDENT_CODE
+        INTERFACE_SOURCES
+        INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+    )
         get_property(is_set TARGET ${src_target} PROPERTY ${prop} SET)
-        if (is_set)
+        if(is_set)
             get_target_property(v ${src_target} ${prop})
             set_target_properties(${dest_target} PROPERTIES ${prop} "${v}")
             # message(STATUS "set_target_properties(${dest_target} PROPERTIES ${prop} ${v})")
-        endif ()
-    endforeach ()
+        endif()
+    endforeach()
 
     # copy configuration-dependent properties
     get_target_property(imported_configs ${src_target}
-            IMPORTED_CONFIGURATIONS)
+        IMPORTED_CONFIGURATIONS)
 
-    foreach (config ${imported_configs})
-        foreach (prop_prefix ${config_dependent_props})
+    foreach(config ${imported_configs})
+        foreach(prop_prefix ${config_dependent_props})
             set(prop ${prop_prefix}_${config})
             get_property(is_set TARGET ${src_target} PROPERTY ${prop} SET)
-            if (is_set)
+            if(is_set)
                 get_target_property(v ${src_target} ${prop})
                 set_target_properties(${dest_target}
-                        PROPERTIES ${prop} "${v}")
+                    PROPERTIES ${prop} "${v}")
                 # message(STATUS "set_target_properties(${dest_target} PROPERTIES ${prop} ${v})")
-            endif ()
-        endforeach ()
-    endforeach ()
+            endif()
+        endforeach()
+    endforeach()
 endfunction()

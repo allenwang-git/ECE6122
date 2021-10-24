@@ -1,8 +1,7 @@
-}
-ret = (len == 0);
-}
-return
-ret;
+    }
+    ret = (len == 0);
+  }
+  return ret;
 }
 
 #if defined(_WIN32) && !defined(GLEW_EGL) && !defined(GLEW_OSMESA)

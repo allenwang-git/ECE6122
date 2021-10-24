@@ -5,35 +5,35 @@ include_directories("${GLFW_SOURCE_DIR}/deps")
 
 if (MATH_LIBRARY)
     link_libraries("${MATH_LIBRARY}")
-endif ()
+endif()
 
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif ()
+endif()
 
 if (WIN32)
     set(ICON glfw.rc)
 elseif (APPLE)
     set(ICON glfw.icns)
-endif ()
+endif()
 
 if (${CMAKE_VERSION} VERSION_EQUAL "3.1.0" OR
-        ${CMAKE_VERSION} VERSION_GREATER "3.1.0")
+    ${CMAKE_VERSION} VERSION_GREATER "3.1.0")
     set(CMAKE_C_STANDARD 99)
-else ()
+else()
     # Remove this fallback when removing support for CMake version less than 3.1
     add_compile_options("$<$<C_COMPILER_ID:AppleClang>:-std=c99>"
-            "$<$<C_COMPILER_ID:Clang>:-std=c99>"
-            "$<$<C_COMPILER_ID:GNU>:-std=c99>")
+                        "$<$<C_COMPILER_ID:Clang>:-std=c99>"
+                        "$<$<C_COMPILER_ID:GNU>:-std=c99>")
 
-endif ()
+endif()
 
 set(GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h"
-        "${GLFW_SOURCE_DIR}/deps/glad_gl.c")
+            "${GLFW_SOURCE_DIR}/deps/glad_gl.c")
 set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
-        "${GLFW_SOURCE_DIR}/deps/getopt.c")
+           "${GLFW_SOURCE_DIR}/deps/getopt.c")
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
-        "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
+                "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD_GL})
 add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD_GL})
@@ -48,24 +48,24 @@ add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD_GL})
 target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}")
 if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
-endif ()
+endif()
 
 set(GUI_ONLY_BINARIES boing gears heightmap particles sharing simple splitview
-        wave)
+    wave)
 set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
-        FOLDER "GLFW3/Examples")
+                      FOLDER "GLFW3/Examples")
 
 if (GLFW_USE_OSMESA)
     target_compile_definitions(offscreen PRIVATE USE_NATIVE_OSMESA)
-endif ()
+endif()
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables
     set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
-            LINK_FLAGS "/ENTRY:mainCRTStartup")
-endif ()
+                          LINK_FLAGS "/ENTRY:mainCRTStartup")
+endif()
 
 if (APPLE)
     set_target_properties(boing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Boing")
@@ -78,11 +78,11 @@ if (APPLE)
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
 
     set_source_files_properties(glfw.icns PROPERTIES
-            MACOSX_PACKAGE_LOCATION "Resources")
+                                MACOSX_PACKAGE_LOCATION "Resources")
     set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
-            MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
-            MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION}
-            MACOSX_BUNDLE_ICON_FILE glfw.icns
-            MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/MacOSXBundleInfo.plist.in")
-endif ()
+                          MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
+                          MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION}
+                          MACOSX_BUNDLE_ICON_FILE glfw.icns
+                          MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/MacOSXBundleInfo.plist.in")
+endif()
 

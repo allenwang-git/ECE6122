@@ -9,7 +9,7 @@ find_path(EPOLLSHIM_INCLUDE_DIRS NAMES sys/epoll.h sys/timerfd.h HINTS /usr/loca
 find_library(EPOLLSHIM_LIBRARIES NAMES epoll-shim libepoll-shim HINTS /usr/local/lib)
 
 if (EPOLLSHIM_INCLUDE_DIRS AND EPOLLSHIM_LIBRARIES)
-    set(EPOLLSHIM_FOUND TRUE)
+	set(EPOLLSHIM_FOUND TRUE)
 endif (EPOLLSHIM_INCLUDE_DIRS AND EPOLLSHIM_LIBRARIES)
 
 include(FindPackageHandleStandardArgs)

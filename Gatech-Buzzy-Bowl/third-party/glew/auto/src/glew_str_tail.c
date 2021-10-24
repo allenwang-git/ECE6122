@@ -1,8 +1,7 @@
-}
-ret = (len == 0);
-}
-return
-ret;
+    }
+    ret = (len == 0);
+  }
+  return ret;
 }
 
 #endif /* _WIN32 */

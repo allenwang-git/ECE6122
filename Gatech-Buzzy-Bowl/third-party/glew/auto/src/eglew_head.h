@@ -54,18 +54,15 @@ typedef void *EGLSyncKHR;
 typedef intptr_t EGLAttribKHR;
 typedef void *EGLLabelKHR;
 typedef void *EGLObjectKHR;
-typedef void (EGLAPIENTRY *EGLDEBUGPROCKHR)(EGLenum error, const char *command, EGLint messageType,
-                                            EGLLabelKHR threadLabel, EGLLabelKHR objectLabel, const char *message);
+typedef void (EGLAPIENTRY  *EGLDEBUGPROCKHR)(EGLenum error,const char *command,EGLint messageType,EGLLabelKHR threadLabel,EGLLabelKHR objectLabel,const char* message);
 typedef khronos_utime_nanoseconds_t EGLTimeKHR;
 typedef void *EGLImageKHR;
 typedef void *EGLStreamKHR;
 typedef khronos_uint64_t EGLuint64KHR;
 typedef int EGLNativeFileDescriptorKHR;
 typedef khronos_ssize_t EGLsizeiANDROID;
-typedef void (*EGLSetBlobFuncANDROID)(const void *key, EGLsizeiANDROID keySize, const void *value,
-                                      EGLsizeiANDROID valueSize);
-typedef EGLsizeiANDROID (*EGLGetBlobFuncANDROID)(const void *key, EGLsizeiANDROID keySize, void *value,
-                                                 EGLsizeiANDROID valueSize);
+typedef void (*EGLSetBlobFuncANDROID) (const void *key, EGLsizeiANDROID keySize, const void *value, EGLsizeiANDROID valueSize);
+typedef EGLsizeiANDROID (*EGLGetBlobFuncANDROID) (const void *key, EGLsizeiANDROID keySize, void *value, EGLsizeiANDROID valueSize);
 typedef void *EGLDeviceEXT;
 typedef void *EGLOutputLayerEXT;
 typedef void *EGLOutputPortEXT;
@@ -88,4 +85,4 @@ struct EGLClientPixmapHI;
 
 #define EGL_DEFAULT_DISPLAY               ((EGLNativeDisplayType)0)
 
-EGLAPI __eglMustCastToProperFunctionPointerType EGLAPIENTRY eglGetProcAddress(const char *procname);
+EGLAPI __eglMustCastToProperFunctionPointerType EGLAPIENTRY eglGetProcAddress (const char *procname);

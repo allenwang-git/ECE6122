@@ -12,7 +12,7 @@ class TestGlew(ConanFile):
         self.run("cmake --build . %s" % cmake.build_config)
 
     def test(self):
-        self.run(os.sep.join([".", "bin", "testGlew"]))
+        self.run(os.sep.join([".","bin", "testGlew"]))
 
     def imports(self):
         if self.settings.os == "Windows":

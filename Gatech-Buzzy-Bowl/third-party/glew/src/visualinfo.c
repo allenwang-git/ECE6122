@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>
-
 #if defined(GLEW_OSMESA)
 #define GLAPI extern
 #include <GL/osmesa.h>
@@ -46,9 +45,7 @@
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/CGLTypes.h>
 #elif !defined(__HAIKU__)
-
 #include <GL/glxew.h>
-
 #endif
 
 #ifdef GLEW_MX
@@ -63,206 +60,211 @@ GLXEWContext _glxewctx;
 #  endif
 #endif /* GLEW_MX */
 
-typedef struct GLContextStruct {
+typedef struct GLContextStruct
+{
 #if defined(GLEW_OSMESA)
-    OSMesaContext ctx;
+  OSMesaContext ctx;
 #elif defined(GLEW_EGL)
-    EGLContext ctx;
+  EGLContext ctx;
 #elif defined(_WIN32)
-    HWND wnd;
-    HDC dc;
-    HGLRC rc;
+  HWND wnd;
+  HDC dc;
+  HGLRC rc;
 #elif defined(__APPLE__) && !defined(GLEW_APPLE_GLX)
-    CGLContextObj ctx, octx;
+  CGLContextObj ctx, octx;
 #elif !defined(__HAIKU__)
-    Display *dpy;
-    XVisualInfo *vi;
-    GLXContext ctx;
-    Window wnd;
-    Colormap cmap;
+  Display* dpy;
+  XVisualInfo* vi;
+  GLXContext ctx;
+  Window wnd;
+  Colormap cmap;
 #endif
 } GLContext;
 
-void InitContext(GLContext *ctx);
-
-GLboolean CreateContext(GLContext *ctx);
-
-void DestroyContext(GLContext *ctx);
-
-void VisualInfo(GLContext *ctx);
-
-void PrintExtensions(const char *s);
-
-GLboolean ParseArgs(int argc, char **argv);
+void InitContext (GLContext* ctx);
+GLboolean CreateContext (GLContext* ctx);
+void DestroyContext (GLContext* ctx);
+void VisualInfo (GLContext* ctx);
+void PrintExtensions (const char* s);
+GLboolean ParseArgs (int argc, char** argv);
 
 int showall = 0;
 int displaystdout = 0;
 int verbose = 0;
 int drawableonly = 0;
 
-char *display = NULL;
+char* display = NULL;
 int visual = -1;
 
-FILE *file = 0;
+FILE* file = 0;
 
-int
-main(int argc, char **argv) {
-    GLenum err;
-    GLContext ctx;
+int 
+main (int argc, char** argv)
+{
+  GLenum err;
+  GLContext ctx;
 
-    /* ---------------------------------------------------------------------- */
-    /* parse arguments */
-    if (GL_TRUE == ParseArgs(argc - 1, argv + 1)) {
+  /* ---------------------------------------------------------------------- */
+  /* parse arguments */
+  if (GL_TRUE == ParseArgs(argc-1, argv+1))
+  {
 #if defined(_WIN32)
-        fprintf(stderr, "Usage: visualinfo [-a] [-s] [-h] [-pf <id>]\n");
-        fprintf(stderr, "        -a: show all visuals\n");
-        fprintf(stderr, "        -s: display to stdout instead of visualinfo.txt\n");
-        fprintf(stderr, "        -pf <id>: use given pixelformat\n");
-        fprintf(stderr, "        -h: this screen\n");
+    fprintf(stderr, "Usage: visualinfo [-a] [-s] [-h] [-pf <id>]\n");
+    fprintf(stderr, "        -a: show all visuals\n");
+    fprintf(stderr, "        -s: display to stdout instead of visualinfo.txt\n");
+    fprintf(stderr, "        -pf <id>: use given pixelformat\n");
+    fprintf(stderr, "        -h: this screen\n");
 #else
-        fprintf(stderr, "Usage: visualinfo [-h] [-display <display>] [-visual <id>]\n");
-        fprintf(stderr, "        -h: this screen\n");
-        fprintf(stderr, "        -display <display>: use given display\n");
-        fprintf(stderr, "        -visual <id>: use given visual\n");
+    fprintf(stderr, "Usage: visualinfo [-h] [-display <display>] [-visual <id>]\n");
+    fprintf(stderr, "        -h: this screen\n");
+    fprintf(stderr, "        -display <display>: use given display\n");
+    fprintf(stderr, "        -visual <id>: use given visual\n");
 #endif
-        return 1;
-    }
+    return 1;
+  }
 
-    /* ---------------------------------------------------------------------- */
-    /* create OpenGL rendering context */
-    InitContext(&ctx);
-    if (GL_TRUE == CreateContext(&ctx)) {
-        fprintf(stderr, "Error: CreateContext failed\n");
-        DestroyContext(&ctx);
-        return 1;
-    }
+  /* ---------------------------------------------------------------------- */
+  /* create OpenGL rendering context */
+  InitContext(&ctx);
+  if (GL_TRUE == CreateContext(&ctx))
+  {
+    fprintf(stderr, "Error: CreateContext failed\n");
+    DestroyContext(&ctx);
+    return 1;
+  }
 
-    /* ---------------------------------------------------------------------- */
-    /* initialize GLEW */
-    glewExperimental = GL_TRUE;
+  /* ---------------------------------------------------------------------- */
+  /* initialize GLEW */
+  glewExperimental = GL_TRUE;
 #ifdef GLEW_MX
-    err = glewContextInit(glewGetContext());
+  err = glewContextInit(glewGetContext());
 #  ifdef _WIN32
-    err = err || wglewContextInit(wglewGetContext());
+  err = err || wglewContextInit(wglewGetContext());
 #  elif !defined(__APPLE__) && !defined(__HAIKU__) || defined(GLEW_APPLE_GLX)
-    err = err || glxewContextInit(glxewGetContext());
+  err = err || glxewContextInit(glxewGetContext());
 #  endif
 #else
-    err = glewInit();
+  err = glewInit();
 #endif
-    if (GLEW_OK != err) {
-        fprintf(stderr, "Error [main]: glewInit failed: %s\n", glewGetErrorString(err));
-        DestroyContext(&ctx);
-        return 1;
-    }
+  if (GLEW_OK != err)
+  {
+    fprintf(stderr, "Error [main]: glewInit failed: %s\n", glewGetErrorString(err));
+    DestroyContext(&ctx);
+    return 1;
+  }
 
-    /* ---------------------------------------------------------------------- */
-    /* open file */
+  /* ---------------------------------------------------------------------- */
+  /* open file */
 #if defined(_WIN32)
-    if (!displaystdout)
-    {
+  if (!displaystdout)
+  {
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
-      if (fopen_s(&file, "visualinfo.txt", "w") != 0)
-        file = stdout;
-#else
-      file = fopen("visualinfo.txt", "w");
-#endif
-    }
-    if (file == NULL)
+    if (fopen_s(&file, "visualinfo.txt", "w") != 0)
       file = stdout;
 #else
+    file = fopen("visualinfo.txt", "w");
+#endif
+  }
+  if (file == NULL)
     file = stdout;
+#else
+  file = stdout;
 #endif
 
-    /* ---------------------------------------------------------------------- */
-    /* output header information */
-    /* OpenGL extensions */
-    fprintf(file, "OpenGL vendor string: %s\n", glGetString(GL_VENDOR));
-    fprintf(file, "OpenGL renderer string: %s\n", glGetString(GL_RENDERER));
-    fprintf(file, "OpenGL version string: %s\n", glGetString(GL_VERSION));
-    fprintf(file, "OpenGL extensions (GL_): \n");
-    PrintExtensions((const char *) glGetString(GL_EXTENSIONS));
+  /* ---------------------------------------------------------------------- */
+  /* output header information */
+  /* OpenGL extensions */
+  fprintf(file, "OpenGL vendor string: %s\n", glGetString(GL_VENDOR));
+  fprintf(file, "OpenGL renderer string: %s\n", glGetString(GL_RENDERER));
+  fprintf(file, "OpenGL version string: %s\n", glGetString(GL_VERSION));
+  fprintf(file, "OpenGL extensions (GL_): \n");
+  PrintExtensions((const char*)glGetString(GL_EXTENSIONS));
 
 #ifndef GLEW_NO_GLU
-    /* GLU extensions */
-    fprintf(file, "GLU version string: %s\n", gluGetString(GLU_VERSION));
-    fprintf(file, "GLU extensions (GLU_): \n");
-    PrintExtensions((const char *) gluGetString(GLU_EXTENSIONS));
+  /* GLU extensions */
+  fprintf(file, "GLU version string: %s\n", gluGetString(GLU_VERSION));
+  fprintf(file, "GLU extensions (GLU_): \n");
+  PrintExtensions((const char*)gluGetString(GLU_EXTENSIONS));
 #endif
 
-    /* ---------------------------------------------------------------------- */
-    /* extensions string */
+  /* ---------------------------------------------------------------------- */
+  /* extensions string */
 #if defined(GLEW_OSMESA)
 #elif defined(GLEW_EGL)
 #elif defined(_WIN32)
-    /* WGL extensions */
-    if (WGLEW_ARB_extensions_string || WGLEW_EXT_extensions_string)
-    {
-      fprintf(file, "WGL extensions (WGL_): \n");
-      PrintExtensions(wglGetExtensionsStringARB ?
-                      (const char*)wglGetExtensionsStringARB(ctx.dc) :
-              (const char*)wglGetExtensionsStringEXT());
-    }
+  /* WGL extensions */
+  if (WGLEW_ARB_extensions_string || WGLEW_EXT_extensions_string)
+  {
+    fprintf(file, "WGL extensions (WGL_): \n");
+    PrintExtensions(wglGetExtensionsStringARB ? 
+                    (const char*)wglGetExtensionsStringARB(ctx.dc) :
+		    (const char*)wglGetExtensionsStringEXT());
+  }
 #elif defined(__APPLE__) && !defined(GLEW_APPLE_GLX)
-
+  
 #elif defined(__HAIKU__)
 
-    /* TODO */
+  /* TODO */
 
 #else
-    /* GLX extensions */
-    fprintf(file, "GLX extensions (GLX_): \n");
-    PrintExtensions(glXQueryExtensionsString(glXGetCurrentDisplay(),
-                                             DefaultScreen(glXGetCurrentDisplay())));
+  /* GLX extensions */
+  fprintf(file, "GLX extensions (GLX_): \n");
+  PrintExtensions(glXQueryExtensionsString(glXGetCurrentDisplay(), 
+                                           DefaultScreen(glXGetCurrentDisplay())));
 #endif
 
-    /* ---------------------------------------------------------------------- */
-    /* enumerate all the formats */
-    VisualInfo(&ctx);
+  /* ---------------------------------------------------------------------- */
+  /* enumerate all the formats */
+  VisualInfo(&ctx);
 
-    /* ---------------------------------------------------------------------- */
-    /* release resources */
-    DestroyContext(&ctx);
-    if (file != stdout)
-        fclose(file);
-    return 0;
+  /* ---------------------------------------------------------------------- */
+  /* release resources */
+  DestroyContext(&ctx);
+  if (file != stdout)
+    fclose(file);
+  return 0;
 }
 
 /* do the magic to separate all extensions with comma's, except
    for the last one that _may_ terminate in a space. */
-void PrintExtensions(const char *s) {
-    char t[80];
-    int i = 0;
-    char *p = 0;
+void PrintExtensions (const char* s)
+{
+  char t[80];
+  int i=0;
+  char* p=0;
 
-    t[79] = '\0';
-    while (*s) {
-        t[i++] = *s;
-        if (*s == ' ') {
-            if (*(s + 1) != '\0') {
-                t[i - 1] = ',';
-                t[i] = ' ';
-                p = &t[i++];
-            } else /* zoinks! last one terminated in a space! */
-            {
-                t[i - 1] = '\0';
-            }
-        }
-        if (i > 80 - 5) {
-            *p = t[i] = '\0';
-            fprintf(file, "    %s\n", t);
-            p++;
-            i = (int) strlen(p);
-#if defined(_MSC_VER) && (_MSC_VER >= 1400)
-            strcpy_s(t, sizeof(t), p);
-#else
-            strcpy(t, p);
-#endif
-        }
-        s++;
+  t[79] = '\0';
+  while (*s)
+  {
+    t[i++] = *s;
+    if(*s == ' ')
+    {
+      if (*(s+1) != '\0') {
+	t[i-1] = ',';
+	t[i] = ' ';
+	p = &t[i++];
+      }
+      else /* zoinks! last one terminated in a space! */
+      {
+	t[i-1] = '\0';
+      }
     }
-    t[i] = '\0';
-    fprintf(file, "    %s.\n", t);
+    if(i > 80 - 5)
+    {
+      *p = t[i] = '\0';
+      fprintf(file, "    %s\n", t);
+      p++;
+      i = (int)strlen(p);
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+      strcpy_s(t, sizeof(t), p);
+#else
+      strcpy(t, p);
+#endif
+    }
+    s++;
+  }
+  t[i] = '\0';
+  fprintf(file, "    %s.\n", t);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -358,27 +360,27 @@ VisualInfoARB (GLContext* ctx)
       if (!value[0]) continue;
       /* by default show only fully accelerated window or pbuffer capable visuals */
       if (!showall
-      && ((value[2] && !value[1])
-      || (!WGLEW_ARB_pbuffer || !value[n_pbuffer])
-      || (value[3] != WGL_FULL_ACCELERATION_ARB))) continue;
+	  && ((value[2] && !value[1])
+	  || (!WGLEW_ARB_pbuffer || !value[n_pbuffer])
+	  || (value[3] != WGL_FULL_ACCELERATION_ARB))) continue;
       /* print out the information for this visual */
       /* visual id */
       fprintf(file, " |% 4d | ", i);
       /* visual type */
       if (value[1])
       {
-    if (WGLEW_ARB_pbuffer && value[n_pbuffer]) fprintf(file, "wp ");
-    else fprintf(file, "wn ");
+	if (WGLEW_ARB_pbuffer && value[n_pbuffer]) fprintf(file, "wp ");
+	else fprintf(file, "wn ");
       }
       else
       {
-    if (value[2]) fprintf(file, "bm ");
-    else if (WGLEW_ARB_pbuffer && value[n_pbuffer]) fprintf(file, "pb ");
+	if (value[2]) fprintf(file, "bm ");
+	else if (WGLEW_ARB_pbuffer && value[n_pbuffer]) fprintf(file, "pb ");
       }
       /* acceleration */
-      fprintf(file, "%s ", value[3] == WGL_FULL_ACCELERATION_ARB ? "fu" :
-          value[3] == WGL_GENERIC_ACCELERATION_ARB ? "ge" :
-          value[3] == WGL_NO_ACCELERATION_ARB ? "no" : ". ");
+      fprintf(file, "%s ", value[3] == WGL_FULL_ACCELERATION_ARB ? "fu" : 
+	      value[3] == WGL_GENERIC_ACCELERATION_ARB ? "ge" :
+	      value[3] == WGL_NO_ACCELERATION_ARB ? "no" : ". ");
       /* gdi support */
       fprintf(file, " %c ", value[25] ? 'y' : '.');
       /* format */
@@ -399,23 +401,23 @@ VisualInfoARB (GLContext* ctx)
       fprintf(file, " %c ", value[6] ? 'y' : '.');
       /* multisample */
       if (value[24] > 0)
-    fprintf(file, "%2d | ", value[24]);
+	fprintf(file, "%2d | ", value[24]);
       else
-    fprintf(file, " . | ");
+	fprintf(file, " . | ");
       /* color size */
       if (value[8]) fprintf(file, "%3d ", value[8]);
       else fprintf(file, "  . ");
       /* red */
-      if (value[9]) fprintf(file, "%2d ", value[9]);
+      if (value[9]) fprintf(file, "%2d ", value[9]); 
       else fprintf(file, " . ");
       /* green */
-      if (value[10]) fprintf(file, "%2d ", value[10]);
+      if (value[10]) fprintf(file, "%2d ", value[10]); 
       else fprintf(file, " . ");
       /* blue */
       if (value[11]) fprintf(file, "%2d ", value[11]);
       else fprintf(file, " . ");
       /* alpha */
-      if (value[12]) fprintf(file, "%2d | ", value[12]);
+      if (value[12]) fprintf(file, "%2d | ", value[12]); 
       else fprintf(file, " . | ");
       /* aux buffers */
       if (value[20]) fprintf(file, "%2d ", value[20]);
@@ -464,13 +466,13 @@ VisualInfoARB (GLContext* ctx)
     fprintf(file, "\n");
     /* loop through all the pixel formats */
     for(i = 1; i <= maxpf; i++)
-    {
+    {	    
       DescribePixelFormat(ctx->dc, i, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
       /* only describe this format if it supports OpenGL */
       if(!(pfd.dwFlags & PFD_SUPPORT_OPENGL)
-     || (drawableonly && !(pfd.dwFlags & PFD_DRAW_TO_WINDOW))) continue;
-      fprintf(file, "Visual ID: %2d  depth=%d  class=%s\n", i, pfd.cDepthBits,
-         pfd.cColorBits <= 8 ? "PseudoColor" : "TrueColor");
+	 || (drawableonly && !(pfd.dwFlags & PFD_DRAW_TO_WINDOW))) continue;
+      fprintf(file, "Visual ID: %2d  depth=%d  class=%s\n", i, pfd.cDepthBits, 
+	     pfd.cColorBits <= 8 ? "PseudoColor" : "TrueColor");
       fprintf(file, "    bufferSize=%d level=%d renderType=%s doubleBuffer=%d stereo=%d\n", pfd.cColorBits, pfd.bReserved, pfd.iPixelType == PFD_TYPE_RGBA ? "rgba" : "ci", pfd.dwFlags & PFD_DOUBLEBUFFER, pfd.dwFlags & PFD_STEREO);
       fprintf(file, "    generic=%d generic accelerated=%d\n", (pfd.dwFlags & PFD_GENERIC_FORMAT) == PFD_GENERIC_FORMAT, (pfd.dwFlags & PFD_GENERIC_ACCELERATED) == PFD_GENERIC_ACCELERATED);
       fprintf(file, "    rgba: redSize=%d greenSize=%d blueSize=%d alphaSize=%d\n", pfd.cRedBits, pfd.cGreenBits, pfd.cBlueBits, pfd.cAlphaBits);
@@ -506,22 +508,22 @@ VisualInfoGDI (GLContext* ctx)
       DescribePixelFormat(ctx->dc, i, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
       /* only describe this format if it supports OpenGL */
       if(!(pfd.dwFlags & PFD_SUPPORT_OPENGL)
-     || (drawableonly && (pfd.dwFlags & PFD_DRAW_TO_BITMAP))) continue;
+	 || (drawableonly && (pfd.dwFlags & PFD_DRAW_TO_BITMAP))) continue;
       /* other criteria could be tested here for actual pixel format
-     choosing in an application:
-
-     for (...each pixel format...) {
-     if (pfd.dwFlags & PFD_SUPPORT_OPENGL &&
-     pfd.dwFlags & PFD_DOUBLEBUFFER &&
-     pfd.cDepthBits >= 24 &&
-     pfd.cColorBits >= 24)
-     {
-     goto found;
-     }
-     }
-     ... not found so exit ...
-     found:
-     ... found so use it ...
+	 choosing in an application:
+	   
+	 for (...each pixel format...) {
+	 if (pfd.dwFlags & PFD_SUPPORT_OPENGL &&
+	 pfd.dwFlags & PFD_DOUBLEBUFFER &&
+	 pfd.cDepthBits >= 24 &&
+	 pfd.cColorBits >= 24)
+	 {
+	 goto found;
+	 }
+	 }
+	 ... not found so exit ...
+	 found:
+	 ... found so use it ...
       */
       /* print out the information for this pixel format */
       fprintf(file, "0x%02x ", i);
@@ -530,28 +532,28 @@ VisualInfoGDI (GLContext* ctx)
       else if(pfd.dwFlags & PFD_DRAW_TO_BITMAP) fprintf(file, "bm ");
       else fprintf(file, "pb ");
       /* should find transparent pixel from LAYERPLANEDESCRIPTOR */
-      fprintf(file, " . ");
+      fprintf(file, " . "); 
       fprintf(file, "%3d ", pfd.cColorBits);
       /* bReserved field indicates number of over/underlays */
       if(pfd.bReserved) fprintf(file, " %d ", pfd.bReserved);
-      else fprintf(file, " . ");
+      else fprintf(file, " . "); 
       fprintf(file, " %c ", pfd.iPixelType == PFD_TYPE_RGBA ? 'r' : 'c');
       fprintf(file, "%c ", pfd.dwFlags & PFD_DOUBLEBUFFER ? 'y' : '.');
       fprintf(file, " %c ", pfd.dwFlags & PFD_STEREO ? 'y' : '.');
       /* added: */
       fprintf(file, " %c ", pfd.dwFlags & PFD_GENERIC_FORMAT ? 'y' : '.');
       fprintf(file, " %c ", pfd.dwFlags & PFD_GENERIC_ACCELERATED ? 'y' : '.');
-      if(pfd.cRedBits && pfd.iPixelType == PFD_TYPE_RGBA)
-    fprintf(file, "%2d ", pfd.cRedBits);
+      if(pfd.cRedBits && pfd.iPixelType == PFD_TYPE_RGBA) 
+	fprintf(file, "%2d ", pfd.cRedBits);
       else fprintf(file, " . ");
-      if(pfd.cGreenBits && pfd.iPixelType == PFD_TYPE_RGBA)
-    fprintf(file, "%2d ", pfd.cGreenBits);
+      if(pfd.cGreenBits && pfd.iPixelType == PFD_TYPE_RGBA) 
+	fprintf(file, "%2d ", pfd.cGreenBits);
       else fprintf(file, " . ");
-      if(pfd.cBlueBits && pfd.iPixelType == PFD_TYPE_RGBA)
-    fprintf(file, "%2d ", pfd.cBlueBits);
+      if(pfd.cBlueBits && pfd.iPixelType == PFD_TYPE_RGBA) 
+	fprintf(file, "%2d ", pfd.cBlueBits);
       else fprintf(file, " . ");
-      if(pfd.cAlphaBits && pfd.iPixelType == PFD_TYPE_RGBA)
-    fprintf(file, "%2d ", pfd.cAlphaBits);
+      if(pfd.cAlphaBits && pfd.iPixelType == PFD_TYPE_RGBA) 
+	fprintf(file, "%2d ", pfd.cAlphaBits);
       else fprintf(file, " . ");
       if(pfd.cAuxBuffers)     fprintf(file, "%2d ", pfd.cAuxBuffers);
       else fprintf(file, " . ");
@@ -583,13 +585,13 @@ VisualInfoGDI (GLContext* ctx)
     fprintf(file, "\n");
     /* loop through all the pixel formats */
     for(i = 1; i <= maxpf; i++)
-    {
+    {	    
       DescribePixelFormat(ctx->dc, i, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
       /* only describe this format if it supports OpenGL */
       if(!(pfd.dwFlags & PFD_SUPPORT_OPENGL)
-     || (drawableonly && !(pfd.dwFlags & PFD_DRAW_TO_WINDOW))) continue;
-      fprintf(file, "Visual ID: %2d  depth=%d  class=%s\n", i, pfd.cDepthBits,
-         pfd.cColorBits <= 8 ? "PseudoColor" : "TrueColor");
+	 || (drawableonly && !(pfd.dwFlags & PFD_DRAW_TO_WINDOW))) continue;
+      fprintf(file, "Visual ID: %2d  depth=%d  class=%s\n", i, pfd.cDepthBits, 
+	     pfd.cColorBits <= 8 ? "PseudoColor" : "TrueColor");
       fprintf(file, "    bufferSize=%d level=%d renderType=%s doubleBuffer=%ld stereo=%ld\n", pfd.cColorBits, pfd.bReserved, pfd.iPixelType == PFD_TYPE_RGBA ? "rgba" : "ci", pfd.dwFlags & PFD_DOUBLEBUFFER, pfd.dwFlags & PFD_STEREO);
       fprintf(file, "    generic=%d generic accelerated=%d\n", (pfd.dwFlags & PFD_GENERIC_FORMAT) == PFD_GENERIC_FORMAT, (pfd.dwFlags & PFD_GENERIC_ACCELERATED) == PFD_GENERIC_ACCELERATED);
       fprintf(file, "    rgba: redSize=%d greenSize=%d blueSize=%d alphaSize=%d\n", pfd.cRedBits, pfd.cGreenBits, pfd.cBlueBits, pfd.cAlphaBits);
@@ -644,297 +646,375 @@ VisualInfo (GLContext* ctx)
 #else /* GLX */
 
 void
-VisualInfo(GLContext *ctx) {
-    int n_fbc;
-    GLXFBConfig *fbc;
-    int value, ret, i;
+VisualInfo (GLContext* ctx)
+{
+  int n_fbc;
+  GLXFBConfig* fbc;
+  int value, ret, i;
 
-    fbc = glXGetFBConfigs(ctx->dpy, DefaultScreen(ctx->dpy), &n_fbc);
+  fbc = glXGetFBConfigs(ctx->dpy, DefaultScreen(ctx->dpy), &n_fbc);
 
-    if (fbc) {
-        if (!verbose) {
-            /* print table header */
-            fprintf(file,
-                    " +-----+-------------------------+-----------------+----------+-------------+-------+------+\n");
-            fprintf(file,
-                    " |     |        visual           |      color      | ax dp st |    accum    |   ms  |  cav |\n");
-            fprintf(file,
-                    " |  id | tp xr cl fm db st lv xp |  sz  r  g  b  a | bf th cl | r  g  b  a  | ns  b |  eat |\n");
-            fprintf(file,
-                    " +-----+-------------------------+-----------------+----------+-------------+-------+------+\n");
-            /* loop through all the fbcs */
-            for (i = 0; i < n_fbc; i++) {
-                /* print out the information for this fbc */
-                /* visual id */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_FBCONFIG_ID, &value);
-                if (ret != Success) {
-                    fprintf(file, "|  ?  |");
-                } else {
-                    fprintf(file, " |% 4d | ", value);
-                }
-                /* visual type */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_DRAWABLE_TYPE, &value);
-                if (ret != Success) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (value & GLX_WINDOW_BIT) {
-                        if (value & GLX_PBUFFER_BIT) {
-                            fprintf(file, "wp ");
-                        } else {
-                            fprintf(file, "wn ");
-                        }
-                    } else {
-                        if (value & GLX_PBUFFER_BIT) {
-                            fprintf(file, "pb ");
-                        } else if (value & GLX_PIXMAP_BIT) {
-                            fprintf(file, "pm ");
-                        } else {
-                            fprintf(file, " ? ");
-                        }
-                    }
-                }
-                /* x renderable */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_X_RENDERABLE, &value);
-                if (ret != Success) {
-                    fprintf(file, " ? ");
-                } else {
-                    fprintf(file, value ? " y " : " n ");
-                }
-                /* class */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_X_VISUAL_TYPE, &value);
-                if (ret != Success) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (GLX_TRUE_COLOR == value)
-                        fprintf(file, "tc ");
-                    else if (GLX_DIRECT_COLOR == value)
-                        fprintf(file, "dc ");
-                    else if (GLX_PSEUDO_COLOR == value)
-                        fprintf(file, "pc ");
-                    else if (GLX_STATIC_COLOR == value)
-                        fprintf(file, "sc ");
-                    else if (GLX_GRAY_SCALE == value)
-                        fprintf(file, "gs ");
-                    else if (GLX_STATIC_GRAY == value)
-                        fprintf(file, "sg ");
-                    else if (GLX_X_VISUAL_TYPE == value)
-                        fprintf(file, " . ");
-                    else
-                        fprintf(file, " ? ");
-                }
-                /* format */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_RENDER_TYPE, &value);
-                if (ret != Success) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (GLXEW_NV_float_buffer) {
-                        int ret2, value2;
-                        ret2 = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_FLOAT_COMPONENTS_NV, &value2);
-                        if (Success == ret2 && GL_TRUE == value2) {
-                            fprintf(file, " f ");
-                        } else if (value & GLX_RGBA_BIT)
-                            fprintf(file, " i ");
-                        else if (value & GLX_COLOR_INDEX_BIT)
-                            fprintf(file, " c ");
-                        else
-                            fprintf(file, " ? ");
-                    } else {
-                        if (value & GLX_RGBA_FLOAT_ATI_BIT)
-                            fprintf(file, " f ");
-                        else if (value & GLX_RGBA_BIT)
-                            fprintf(file, " i ");
-                        else if (value & GLX_COLOR_INDEX_BIT)
-                            fprintf(file, " c ");
-                        else
-                            fprintf(file, " ? ");
-                    }
-                }
-                /* double buffer */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_DOUBLEBUFFER, &value);
-                fprintf(file, " %c ", Success != ret ? '?' : (value ? 'y' : '.'));
-                /* stereo */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_STEREO, &value);
-                fprintf(file, " %c ", Success != ret ? '?' : (value ? 'y' : '.'));
-                /* level */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_LEVEL, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    fprintf(file, "%2d ", value);
-                }
-                /* transparency */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_TRANSPARENT_TYPE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? | ");
-                } else {
-                    if (GLX_TRANSPARENT_RGB == value)
-                        fprintf(file, " r | ");
-                    else if (GLX_TRANSPARENT_INDEX == value)
-                        fprintf(file, " i | ");
-                    else if (GLX_NONE == value)
-                        fprintf(file, " . | ");
-                    else
-                        fprintf(file, " ? | ");
-                }
-                /* color size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_BUFFER_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, "  ? ");
-                } else {
-                    if (value)
-                        fprintf(file, "%3d ", value);
-                    else
-                        fprintf(file, "  . ");
-                }
-                /* red size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_RED_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d ", value);
-                    else
-                        fprintf(file, " . ");
-                }
-                /* green size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_GREEN_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d ", value);
-                    else
-                        fprintf(file, " . ");
-                }
-                /* blue size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_BLUE_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d ", value);
-                    else
-                        fprintf(file, " . ");
-                }
-                /* alpha size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ALPHA_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? | ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d | ", value);
-                    else
-                        fprintf(file, " . | ");
-                }
-                /* aux buffers */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_AUX_BUFFERS, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d ", value);
-                    else
-                        fprintf(file, " . ");
-                }
-                /* depth size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_DEPTH_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d ", value);
-                    else
-                        fprintf(file, " . ");
-                }
-                /* stencil size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_STENCIL_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? | ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d | ", value);
-                    else
-                        fprintf(file, " . | ");
-                }
-                /* accum red size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ACCUM_RED_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d ", value);
-                    else
-                        fprintf(file, " . ");
-                }
-                /* accum green size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ACCUM_GREEN_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d ", value);
-                    else
-                        fprintf(file, " . ");
-                }
-                /* accum blue size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ACCUM_BLUE_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d ", value);
-                    else
-                        fprintf(file, " . ");
-                }
-                /* accum alpha size */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ACCUM_ALPHA_SIZE, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? | ");
-                } else {
-                    if (value)
-                        fprintf(file, "%2d | ", value);
-                    else
-                        fprintf(file, " . | ");
-                }
-                /* multisample */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_SAMPLES, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? ");
-                } else {
-                    fprintf(file, "%2d ", value);
-                }
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_SAMPLE_BUFFERS, &value);
-                if (Success != ret) {
-                    fprintf(file, " ? | ");
-                } else {
-                    fprintf(file, "%2d | ", value);
-                }
-                /* caveat */
-                ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_CONFIG_CAVEAT, &value);
-                if (Success != ret) {
-                    fprintf(file, "???? |");
-                } else {
-                    if (GLX_NONE == value)
-                        fprintf(file, "none |\n");
-                    else if (GLX_SLOW_CONFIG == value)
-                        fprintf(file, "slow |\n");
-                    else if (GLX_NON_CONFORMANT_CONFIG == value)
-                        fprintf(file, "ncft |\n");
-                    else
-                        fprintf(file, "???? |\n");
-                }
-            }
-            /* print table footer */
-            fprintf(file,
-                    " +-----+-------------------------+-----------------+----------+-------------+-------+------+\n");
-            fprintf(file,
-                    " |  id | tp xr cl fm db st lv xp |  sz  r  g  b  a | bf th cl | r  g  b  a  | ns  b |  eat |\n");
-            fprintf(file,
-                    " |     |        visual           |      color      | ax dp st |    accum    |   ms  |  cav |\n");
-            fprintf(file,
-                    " +-----+-------------------------+-----------------+----------+-------------+-------+------+\n");
+  if (fbc)
+  {
+    if (!verbose)
+    {
+      /* print table header */
+      fprintf(file, " +-----+-------------------------+-----------------+----------+-------------+-------+------+\n");
+      fprintf(file, " |     |        visual           |      color      | ax dp st |    accum    |   ms  |  cav |\n");
+      fprintf(file, " |  id | tp xr cl fm db st lv xp |  sz  r  g  b  a | bf th cl | r  g  b  a  | ns  b |  eat |\n");
+      fprintf(file, " +-----+-------------------------+-----------------+----------+-------------+-------+------+\n");
+      /* loop through all the fbcs */
+      for (i=0; i<n_fbc; i++)
+      {
+        /* print out the information for this fbc */
+        /* visual id */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_FBCONFIG_ID, &value);
+        if (ret != Success)
+        {
+          fprintf(file, "|  ?  |");
         }
+        else
+        {
+          fprintf(file, " |% 4d | ", value);
+        }
+        /* visual type */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_DRAWABLE_TYPE, &value);
+        if (ret != Success)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (value & GLX_WINDOW_BIT)
+          {
+            if (value & GLX_PBUFFER_BIT)
+            {
+              fprintf(file, "wp ");
+            }
+            else
+            {
+              fprintf(file, "wn ");
+            }
+          }
+          else
+          {
+            if (value & GLX_PBUFFER_BIT)
+            {
+              fprintf(file, "pb ");
+            }
+            else if (value & GLX_PIXMAP_BIT)
+            {
+              fprintf(file, "pm ");
+            }
+            else
+            {
+              fprintf(file, " ? ");
+            }
+          }
+        }
+        /* x renderable */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_X_RENDERABLE, &value);
+        if (ret != Success)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          fprintf(file, value ? " y " : " n ");
+        }
+        /* class */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_X_VISUAL_TYPE, &value);
+        if (ret != Success)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (GLX_TRUE_COLOR == value)
+            fprintf(file, "tc ");
+          else if (GLX_DIRECT_COLOR == value)
+            fprintf(file, "dc ");
+          else if (GLX_PSEUDO_COLOR == value)
+            fprintf(file, "pc ");
+          else if (GLX_STATIC_COLOR == value)
+            fprintf(file, "sc ");
+          else if (GLX_GRAY_SCALE == value)
+            fprintf(file, "gs ");
+          else if (GLX_STATIC_GRAY == value)
+            fprintf(file, "sg ");
+          else if (GLX_X_VISUAL_TYPE == value)
+            fprintf(file, " . ");
+          else
+            fprintf(file, " ? ");
+        }
+        /* format */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_RENDER_TYPE, &value);
+        if (ret != Success)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (GLXEW_NV_float_buffer)
+          {
+            int ret2, value2;
+            ret2 = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_FLOAT_COMPONENTS_NV, &value2);
+            if (Success == ret2 && GL_TRUE == value2)
+            {
+              fprintf(file, " f ");
+            }
+            else if (value & GLX_RGBA_BIT)
+              fprintf(file, " i ");
+            else if (value & GLX_COLOR_INDEX_BIT)
+              fprintf(file, " c ");
+            else
+              fprintf(file, " ? ");
+          }
+          else
+          {
+            if (value & GLX_RGBA_FLOAT_ATI_BIT)
+              fprintf(file, " f ");
+            else if (value & GLX_RGBA_BIT)
+              fprintf(file, " i ");
+            else if (value & GLX_COLOR_INDEX_BIT)
+              fprintf(file, " c ");
+            else
+              fprintf(file, " ? ");
+          }
+        }
+        /* double buffer */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_DOUBLEBUFFER, &value);
+        fprintf(file, " %c ", Success != ret ? '?' : (value ? 'y' : '.'));
+        /* stereo */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_STEREO, &value);
+        fprintf(file, " %c ", Success != ret ? '?' : (value ? 'y' : '.'));
+        /* level */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_LEVEL, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          fprintf(file, "%2d ", value);
+        }
+        /* transparency */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_TRANSPARENT_TYPE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? | ");
+        }
+        else
+        {
+          if (GLX_TRANSPARENT_RGB == value)
+            fprintf(file, " r | ");
+          else if (GLX_TRANSPARENT_INDEX == value)
+            fprintf(file, " i | ");
+          else if (GLX_NONE == value)
+            fprintf(file, " . | ");
+          else
+            fprintf(file, " ? | ");
+        }
+        /* color size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_BUFFER_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, "  ? ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%3d ", value);
+          else
+            fprintf(file, "  . ");
+        }
+        /* red size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_RED_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d ", value);
+          else
+            fprintf(file, " . ");
+        }
+        /* green size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_GREEN_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d ", value);
+          else
+            fprintf(file, " . ");
+        }
+        /* blue size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_BLUE_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d ", value);
+          else
+            fprintf(file, " . ");
+        }
+        /* alpha size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ALPHA_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? | ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d | ", value);
+          else
+            fprintf(file, " . | ");
+        }
+        /* aux buffers */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_AUX_BUFFERS, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d ", value);
+          else
+            fprintf(file, " . ");
+        }
+        /* depth size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_DEPTH_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d ", value);
+          else
+            fprintf(file, " . ");
+        }
+        /* stencil size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_STENCIL_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? | ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d | ", value);
+          else
+            fprintf(file, " . | ");
+        }
+        /* accum red size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ACCUM_RED_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d ", value);
+          else
+            fprintf(file, " . ");
+        }
+        /* accum green size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ACCUM_GREEN_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d ", value);
+          else
+            fprintf(file, " . ");
+        }
+        /* accum blue size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ACCUM_BLUE_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d ", value);
+          else
+            fprintf(file, " . ");
+        }
+        /* accum alpha size */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_ACCUM_ALPHA_SIZE, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? | ");
+        }
+        else
+        {
+          if (value)
+            fprintf(file, "%2d | ", value);
+          else
+            fprintf(file, " . | ");
+        }
+        /* multisample */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_SAMPLES, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? ");
+        }
+        else
+        {
+          fprintf(file, "%2d ", value);
+        }
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_SAMPLE_BUFFERS, &value);
+        if (Success != ret)
+        {
+          fprintf(file, " ? | ");
+        }
+        else
+        {
+          fprintf(file, "%2d | ", value);
+        }
+        /* caveat */
+        ret = glXGetFBConfigAttrib(ctx->dpy, fbc[i], GLX_CONFIG_CAVEAT, &value);
+        if (Success != ret)
+        {
+          fprintf(file, "???? |");
+        }
+        else
+        {
+          if (GLX_NONE == value)
+            fprintf(file, "none |\n");
+          else if (GLX_SLOW_CONFIG == value)
+            fprintf(file, "slow |\n");
+          else if (GLX_NON_CONFORMANT_CONFIG == value)
+            fprintf(file, "ncft |\n");
+          else
+            fprintf(file, "???? |\n");
+        }
+      }
+      /* print table footer */
+      fprintf(file, " +-----+-------------------------+-----------------+----------+-------------+-------+------+\n");
+      fprintf(file, " |  id | tp xr cl fm db st lv xp |  sz  r  g  b  a | bf th cl | r  g  b  a  | ns  b |  eat |\n");
+      fprintf(file, " |     |        visual           |      color      | ax dp st |    accum    |   ms  |  cav |\n");
+      fprintf(file, " +-----+-------------------------+-----------------+----------+-------------+-------+------+\n");
     }
+  }
 }
 
 #endif
@@ -1115,92 +1195,103 @@ DestroyContext (GLContext* ctx)
 
 #else /* __UNIX || (__APPLE__ && GLEW_APPLE_GLX) */
 
-void InitContext(GLContext *ctx) {
-    ctx->dpy = NULL;
-    ctx->vi = NULL;
-    ctx->ctx = NULL;
-    ctx->wnd = 0;
-    ctx->cmap = 0;
+void InitContext (GLContext* ctx)
+{
+  ctx->dpy = NULL;
+  ctx->vi = NULL;
+  ctx->ctx = NULL;
+  ctx->wnd = 0;
+  ctx->cmap = 0;
 }
 
-GLboolean CreateContext(GLContext *ctx) {
-    int attrib[] = {GLX_RGBA, GLX_DOUBLEBUFFER, None};
-    int erb, evb;
-    XSetWindowAttributes swa;
-    /* check input */
-    if (NULL == ctx) return GL_TRUE;
-    /* open display */
-    ctx->dpy = XOpenDisplay(display);
-    if (NULL == ctx->dpy) return GL_TRUE;
-    /* query for glx */
-    if (!glXQueryExtension(ctx->dpy, &erb, &evb)) return GL_TRUE;
-    /* choose visual */
-    ctx->vi = glXChooseVisual(ctx->dpy, DefaultScreen(ctx->dpy), attrib);
-    if (NULL == ctx->vi) return GL_TRUE;
-    /* create context */
-    ctx->ctx = glXCreateContext(ctx->dpy, ctx->vi, None, True);
-    if (NULL == ctx->ctx) return GL_TRUE;
-    /* create window */
-    /*wnd = XCreateSimpleWindow(dpy, RootWindow(dpy, vi->screen), 0, 0, 1, 1, 1, 0, 0);*/
-    ctx->cmap = XCreateColormap(ctx->dpy, RootWindow(ctx->dpy, ctx->vi->screen),
-                                ctx->vi->visual, AllocNone);
-    swa.border_pixel = 0;
-    swa.colormap = ctx->cmap;
-    ctx->wnd = XCreateWindow(ctx->dpy, RootWindow(ctx->dpy, ctx->vi->screen),
-                             0, 0, 1, 1, 0, ctx->vi->depth, InputOutput, ctx->vi->visual,
-                             CWBorderPixel | CWColormap, &swa);
-    /* make context current */
-    if (!glXMakeCurrent(ctx->dpy, ctx->wnd, ctx->ctx)) return GL_TRUE;
-    return GL_FALSE;
+GLboolean CreateContext (GLContext* ctx)
+{
+  int attrib[] = { GLX_RGBA, GLX_DOUBLEBUFFER, None };
+  int erb, evb;
+  XSetWindowAttributes swa;
+  /* check input */
+  if (NULL == ctx) return GL_TRUE;
+  /* open display */
+  ctx->dpy = XOpenDisplay(display);
+  if (NULL == ctx->dpy) return GL_TRUE;
+  /* query for glx */
+  if (!glXQueryExtension(ctx->dpy, &erb, &evb)) return GL_TRUE;
+  /* choose visual */
+  ctx->vi = glXChooseVisual(ctx->dpy, DefaultScreen(ctx->dpy), attrib);
+  if (NULL == ctx->vi) return GL_TRUE;
+  /* create context */
+  ctx->ctx = glXCreateContext(ctx->dpy, ctx->vi, None, True);
+  if (NULL == ctx->ctx) return GL_TRUE;
+  /* create window */
+  /*wnd = XCreateSimpleWindow(dpy, RootWindow(dpy, vi->screen), 0, 0, 1, 1, 1, 0, 0);*/
+  ctx->cmap = XCreateColormap(ctx->dpy, RootWindow(ctx->dpy, ctx->vi->screen),
+                              ctx->vi->visual, AllocNone);
+  swa.border_pixel = 0;
+  swa.colormap = ctx->cmap;
+  ctx->wnd = XCreateWindow(ctx->dpy, RootWindow(ctx->dpy, ctx->vi->screen), 
+                           0, 0, 1, 1, 0, ctx->vi->depth, InputOutput, ctx->vi->visual, 
+                           CWBorderPixel | CWColormap, &swa);
+  /* make context current */
+  if (!glXMakeCurrent(ctx->dpy, ctx->wnd, ctx->ctx)) return GL_TRUE;
+  return GL_FALSE;
 }
 
-void DestroyContext(GLContext *ctx) {
-    if (NULL != ctx->dpy && NULL != ctx->ctx) glXDestroyContext(ctx->dpy, ctx->ctx);
-    if (NULL != ctx->dpy && 0 != ctx->wnd) XDestroyWindow(ctx->dpy, ctx->wnd);
-    if (NULL != ctx->dpy && 0 != ctx->cmap) XFreeColormap(ctx->dpy, ctx->cmap);
-    if (NULL != ctx->vi) XFree(ctx->vi);
-    if (NULL != ctx->dpy) XCloseDisplay(ctx->dpy);
+void DestroyContext (GLContext* ctx)
+{
+  if (NULL != ctx->dpy && NULL != ctx->ctx) glXDestroyContext(ctx->dpy, ctx->ctx);
+  if (NULL != ctx->dpy && 0 != ctx->wnd) XDestroyWindow(ctx->dpy, ctx->wnd);
+  if (NULL != ctx->dpy && 0 != ctx->cmap) XFreeColormap(ctx->dpy, ctx->cmap);
+  if (NULL != ctx->vi) XFree(ctx->vi);
+  if (NULL != ctx->dpy) XCloseDisplay(ctx->dpy);
 }
 
 #endif /* __UNIX || (__APPLE__ && GLEW_APPLE_GLX) */
 
-GLboolean ParseArgs(int argc, char **argv) {
-    int p = 0;
-    while (p < argc) {
+GLboolean ParseArgs (int argc, char** argv)
+{
+  int p = 0;
+  while (p < argc)
+  {
 #if defined(_WIN32)
-        if (!strcmp(argv[p], "-pf") || !strcmp(argv[p], "-pixelformat"))
-        {
-          if (++p >= argc) return GL_TRUE;
-          display = NULL;
-          visual = strtol(argv[p], NULL, 0);
-        }
-        else if (!strcmp(argv[p], "-a"))
-        {
-          showall = 1;
-        }
-        else if (!strcmp(argv[p], "-s"))
-        {
-          displaystdout = 1;
-        }
-        else if (!strcmp(argv[p], "-h"))
-        {
-          return GL_TRUE;
-        }
-        else
-          return GL_TRUE;
-#else
-        if (!strcmp(argv[p], "-display")) {
-            if (++p >= argc) return GL_TRUE;
-            display = argv[p];
-        } else if (!strcmp(argv[p], "-visual")) {
-            if (++p >= argc) return GL_TRUE;
-            visual = (int) strtol(argv[p], NULL, 0);
-        } else if (!strcmp(argv[p], "-h")) {
-            return GL_TRUE;
-        } else
-            return GL_TRUE;
-#endif
-        p++;
+    if (!strcmp(argv[p], "-pf") || !strcmp(argv[p], "-pixelformat"))
+    {
+      if (++p >= argc) return GL_TRUE;
+      display = NULL;
+      visual = strtol(argv[p], NULL, 0);
     }
-    return GL_FALSE;
+    else if (!strcmp(argv[p], "-a"))
+    {
+      showall = 1;
+    }
+    else if (!strcmp(argv[p], "-s"))
+    {
+      displaystdout = 1;
+    }
+    else if (!strcmp(argv[p], "-h"))
+    {
+      return GL_TRUE;
+    }
+    else
+      return GL_TRUE;
+#else
+    if (!strcmp(argv[p], "-display"))
+    {
+      if (++p >= argc) return GL_TRUE;
+      display = argv[p];
+    }
+    else if (!strcmp(argv[p], "-visual"))
+    {
+      if (++p >= argc) return GL_TRUE;
+      visual = (int)strtol(argv[p], NULL, 0);
+    }
+    else if (!strcmp(argv[p], "-h"))
+    {
+      return GL_TRUE;
+    }
+    else
+      return GL_TRUE;
+#endif
+    p++;
+  }
+  return GL_FALSE;
 }

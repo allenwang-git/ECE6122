@@ -36,15 +36,15 @@
 
 // Cocoa-specific per-joystick data
 //
-typedef struct _GLFWjoystickNS {
-    IOHIDDeviceRef device;
-    CFMutableArrayRef axes;
-    CFMutableArrayRef buttons;
-    CFMutableArrayRef hats;
+typedef struct _GLFWjoystickNS
+{
+    IOHIDDeviceRef      device;
+    CFMutableArrayRef   axes;
+    CFMutableArrayRef   buttons;
+    CFMutableArrayRef   hats;
 } _GLFWjoystickNS;
 
 
 void _glfwInitJoysticksNS(void);
-
 void _glfwTerminateJoysticksNS(void);
 

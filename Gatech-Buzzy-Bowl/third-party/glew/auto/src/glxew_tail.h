@@ -1,12 +1,7 @@
 /* ------------------------------------------------------------------------ */
 
-GLEWAPI GLenum
-
-GLEWAPIENTRY glxewInit();
-
-GLEWAPI GLboolean
-
-GLEWAPIENTRY glxewIsSupported(const char *name);
+GLEWAPI GLenum GLEWAPIENTRY glxewInit ();
+GLEWAPI GLboolean GLEWAPIENTRY glxewIsSupported (const char *name);
 
 #ifndef GLXEW_GET_VAR
 #define GLXEW_GET_VAR(x) (*(const GLboolean*)&x)
@@ -16,9 +11,7 @@ GLEWAPIENTRY glxewIsSupported(const char *name);
 #define GLXEW_GET_FUN(x) x
 #endif
 
-GLEWAPI GLboolean
-
-GLEWAPIENTRY glxewGetExtension(const char *name);
+GLEWAPI GLboolean GLEWAPIENTRY glxewGetExtension (const char *name);
 
 #ifdef __cplusplus
 }
