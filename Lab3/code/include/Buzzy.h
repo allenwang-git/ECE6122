@@ -13,6 +13,8 @@ Description:
 
 #pragma once
 #include "SpriteWrapper.h"
+#define UPPER_BOUND 270.F
+#define LOWER_BOUND 45.F
 /*
  * This is the derived class of SpriteWrapper for buzzy object
  * */
@@ -31,20 +33,56 @@ public:
         this->py0 = py;
     }
 
+/*
+ * Set buzzy's initial direction up
+ */
+    void headUp()
+    {
+        if ((this->getRotation() <= 360.f && this->getRotation() > UPPER_BOUND)
+            || (this->getRotation() >= 0.f && this->getRotation() <= LOWER_BOUND))
+            this->rotate(-5.f);
+        else
+            this->setRotation(round(this->getRotation()) + 5.f);
+    }
+
+/*
+ * Set buzzy's initial direction down
+ */
+    void headDown()
+    {
+        if ((this->getRotation() <= 360.f && this->getRotation() >= UPPER_BOUND)
+            || (this->getRotation() >= 0.f && this->getRotation() < LOWER_BOUND))
+            this->rotate(5.f);
+        else
+            this->setRotation(round(this->getRotation()) - 5.f);
+    }
+
 /*  check if buzzy has intersected with other objects
  *
  * @param v2f is the other object's position
- * @return true if intersects or false if not
+ * @return true if intersect or false if not
  * */
-    bool intersects(Vector2f v2f)
+    bool intersect(Vector2f v2f)
     {
-        if (abs(this->getPosition().x - v2f.x) < 75 &&
-            abs(this->getPosition().y - v2f.y) < 75)
+        if (abs(this->getPosition().x - v2f.x) < 70 &&
+            abs(this->getPosition().y - v2f.y) < 70)
             return true;
         else
             return false;
     }
-
+/*  check if buzzy has intersected with small objects
+ *
+ * @param v2f is the other object's position
+ * @return true if intersects or false if not
+ * */
+    bool intersectSmall(Vector2f v2f)
+    {
+        if (abs(this->getPosition().x - v2f.x) < 45 &&
+            abs(this->getPosition().y - v2f.y) < 45)
+            return true;
+        else
+            return false;
+    }
     /*
      * This function is used to check if buzzy has hit a woodland creature or not
      *
@@ -55,15 +93,12 @@ public:
     {
         for (int i = 0; i < woodlandCreatures.size(); ++i)
         {
-            if (abs(this->getPosition().x - (*woodlandCreatures[i]).getPosition().x) < 75
-                && abs(this->getPosition().y - (*woodlandCreatures[i]).getPosition().y) < 75) {
-//                cout<<this->getPosition().x<<" "<<this->getPosition().y<< " "<<(*woodlandCreatures[i]).getPosition().x<<" "<<(*woodlandCreatures[i]).getPosition().y<<endl;
+            if (abs(this->getPosition().x - (*woodlandCreatures[i]).getPosition().x) < 70
+                && abs(this->getPosition().y - (*woodlandCreatures[i]).getPosition().y) < 70)
                 return true;
-            }
         }
         return false;
     }
-
 };
 
 #endif //LAB1_BUZZY_H

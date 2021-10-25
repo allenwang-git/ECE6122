@@ -1,7 +1,6 @@
-/lab*/cmake-build-debug/*
-/lab1/out*.txt
-/Lab3/build
-
-#.idea/
-#/lab*/.idea/*
+/lab*/cmake-build-debug
+/Lab*/cmake-build-debug
 /build
+/Lab3/build
+/Gatech-Buzzy-Bowl/build
+/Gatech-Buzzy-Bowl/cmake-build-debug
