@@ -21,14 +21,14 @@ using namespace std;
 class SoundWrapper
 {
 public:
-//    Constructor function
+    //    Constructor function
     SoundWrapper(const string loadPath)
     {
         sBuffer.loadFromFile(loadPath);
         sound.setBuffer(sBuffer);
     }
 
-//    wrapper function of Sound::play() to play the sound
+    //    wrapper function of Sound::play() to play the sound
     void play()
     {
         sound.play();
