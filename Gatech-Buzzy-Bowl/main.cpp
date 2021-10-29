@@ -1,19 +1,36 @@
+/*
+Author: Yinuo Wang
+Class: ECE 6122
+Last Date Modified: 10/25/2021
+
+Description:
+ This program use OpenGL to create a 3D game called "Gatech Buzzy Bowl",
+ In this game, the user launches buzzy across the field attempting
+ to hit the evil mascots from other universities, while avoiding
+ the cute woodland creatures.
+
+ Press Enter to start/restart the game, press Space to modify the buzzy's
+ initial velocity and press up/down to modify buzzy's initial direction.
+ When releasing the Space, the buzzy will be launched.
+
+ If user win or lose the game, the page will reset to the initial page.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <GL/glew.h>
-
 #include <glfw3.h>
-
+#include <glm/glm.hpp>
 GLFWwindow *window;
 
-#include <glm/glm.hpp>
 
 using namespace glm;
 
-int main(void) {
+int main(void)
+{
     // Initialise GLFW
-    if (!glfwInit()) {
+    if (!glfwInit())
+    {
         fprintf(stderr, "Failed to initialize GLFW\n");
         getchar();
         return -1;
@@ -28,7 +45,8 @@ int main(void) {
 
     // Open a window and create its OpenGL context
     window = glfwCreateWindow(1024, 768, "Playground", NULL, NULL);
-    if (window == NULL) {
+    if (window == NULL)
+    {
         fprintf(stderr,
                 "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
         getchar();
@@ -38,7 +56,8 @@ int main(void) {
     glfwMakeContextCurrent(window);
 
     // Initialize GLEW
-    if (glewInit() != GLEW_OK) {
+    if (glewInit() != GLEW_OK)
+    {
         fprintf(stderr, "Failed to initialize GLEW\n");
         getchar();
         glfwTerminate();
@@ -51,7 +70,8 @@ int main(void) {
     // Dark blue background
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-    do {
+    do
+    {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw nothing, see you in tutorial 2 !

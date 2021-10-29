@@ -26,13 +26,13 @@ using namespace std;
 bool isValidInput(const string & strInput, unsigned long & validOutput)
 {
     unsigned long tmpValid;
-//    check the input is a number or not
+    //    check the input is a number or not
     for (auto chInput : strInput)
     {
         if(!isdigit(chInput))
             return false;
     }
-//    check the number is valid or not
+    //    check the number is valid or not
     stringstream(strInput) >> tmpValid;
     if (tmpValid < 0)
     {
@@ -48,12 +48,14 @@ bool isValidInput(const string & strInput, unsigned long & validOutput)
 /*
  * This class is used to construct a customized type of Map Key
  * */
-class Coordinate{
+class Coordinate
+{
 public:
     long x ,y;
-//    constructor
+    //    constructor
     Coordinate();
-    Coordinate(long _x, long _y){
+    Coordinate(long _x, long _y)
+    {
         x = _x;
         y = _y;
     }
@@ -78,7 +80,8 @@ struct Hash{
 /*
  * Define move direction
  * */
-enum Direction{
+enum Direction
+{
     UP = 1,
     DOWN = 3,
     RIGHT = 2,
@@ -93,12 +96,12 @@ enum Direction{
  * */
 void getBlackSquares(const unsigned long totalSteps, string & numBlackSquares)
 {
-//    Initialization
+    //    Initialization
     Coordinate currentCoord(0,0);
     unsigned long currentStep = 0;
     Direction currentDirection = UP;
     unordered_map<Coordinate,string,Hash> gridMap;
-//    ant moving loop
+    //    ant moving loop
     while (currentStep < totalSteps)
     {
             unordered_map<Coordinate,string,Hash>::const_iterator iter = gridMap.find(currentCoord);
@@ -127,7 +130,8 @@ void getBlackSquares(const unsigned long totalSteps, string & numBlackSquares)
             else //black grid
             {
                 gridMap.erase(iter->first);
-                switch(currentDirection) { // counterclockwise 90 degrees rotation logic
+                switch(currentDirection)
+                { // counterclockwise 90 degrees rotation logic
                     case 3:
                         currentDirection = RIGHT;
                         currentCoord.x++;
@@ -163,7 +167,7 @@ int main(int argc, char* argv[])
     unsigned long ulInputSteps{0};
     fstream outputFile("output2.txt", ios::out | ios::trunc);
 
-//    Parse parameters from command line and check invalid input
+    //    Parse parameters from command line and check invalid input
     if (argc != 2) //  check the number of arguments
     {
         strOutput = "Invalid Input";
@@ -178,7 +182,7 @@ int main(int argc, char* argv[])
         strOutput = "Invalid Input";
         cout << "[ECE6122-Lab1-2] Your input is invalid, please input a positive number for this program.\n";
     }
-//    Output prime factors to file
+    //    Output prime factors to file
     if (outputFile.good())
     {
         outputFile << strOutput;

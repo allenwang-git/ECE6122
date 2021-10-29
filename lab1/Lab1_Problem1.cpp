@@ -24,8 +24,8 @@ using namespace std;
  * @param testPrimeInput the number will be tested whether is a prime or not
  * @return true for prime and false for composite.
  * */
-bool isPrime(const unsigned long testPrimeInput){
-
+bool isPrime(const unsigned long testPrimeInput)
+{
     for (int i = 2; i < testPrimeInput; ++i)
     {
         if (testPrimeInput % i ==0)
@@ -46,13 +46,13 @@ bool isPrime(const unsigned long testPrimeInput){
 bool isValidInput(const string & strInput, unsigned long & validOutput)
 {
     unsigned long tmpValid;
-//    check the input is a number or not
+    //    check the input is a number or not
     for (auto chInput : strInput)
     {
         if(!isdigit(chInput))
             return false;
     }
-//    check the number is valid or not
+    //    check the number is valid or not
     stringstream(strInput) >> tmpValid;
     if (tmpValid < 2)
     {
@@ -74,7 +74,7 @@ bool isValidInput(const string & strInput, unsigned long & validOutput)
  * */
 bool GetPrimeFactors (const unsigned long ulInputNumber, string &strOutput)
 {
-//    Get every prime factors
+    //    Get every prime factors
     if (isPrime(ulInputNumber))
     {
         strOutput += to_string(ulInputNumber); // last update of factors string
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
     unsigned long ulInputNumber{0};
     fstream outputFile("output1.txt", ios::out | ios::trunc);
 
-//    Parse parameters from command line and check invalid input
+    //    Parse parameters from command line and check invalid input
     if (argc != 2) //  check the number of arguments
     {
         strOutput =  "Invalid Input";
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
         cout << "[ECE6122-Lab1-1] Your input is a prime, which has no prime factors.\n";
     }
 
-//    Output prime factors to file
+    //    Output prime factors to file
     if (outputFile.good())
     {
         outputFile << strOutput;
