@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5)
 project(GaTech_Buzzy_Bowl)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -9,7 +9,7 @@ add_subdirectory(third-party)
 
 include_directories(
         third-party/glfw/include/GLFW/
-        third-party/glew/include/GL/
+        third-party/glew/include/
         include/
 )
 
