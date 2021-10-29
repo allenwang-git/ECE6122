@@ -21,7 +21,7 @@ using namespace sf;
 class BarWrapper
 {
 public:
-//    Constructor
+    //    Constructor
     BarWrapper(const int length, const int width, const char color,
                const float px, const float py)
     {
@@ -34,13 +34,13 @@ public:
         barLength = length;
     }
 
-//  set the rectangle bar's length
+    //  set the rectangle bar's length
     void setSize(const float len)
     {
         bar.setSize(Vector2f(len, barWidth));
     }
 
-//  draw the bar and its frame in window
+    //  draw the bar and its frame in window
     void drawBar(RenderWindow &window)
     {
         window.draw(bar);
@@ -52,15 +52,15 @@ private:
     VertexArray frame;
     RectangleShape bar;
 
-/*
- * set the bar's frame by using 5 vertices to create 4 segments
- *
- * @param len is the frame's length
- * @param wid is the frame's width
- * @param x is the x coordinate of the rectangle's left top vertex
- * @param y is the y coordinate of the rectangle's left top vertex
- * @return a VertexArray object
-*/
+    /*
+     * set the bar's frame by using 5 vertices to create 4 segments
+     *
+     * @param len is the frame's length
+     * @param wid is the frame's width
+     * @param x is the x coordinate of the rectangle's left top vertex
+     * @param y is the y coordinate of the rectangle's left top vertex
+     * @return a VertexArray object
+    */
     VertexArray setBarframe(const int len, const int wid, const float x, const float y)
     {
         VertexArray lines(sf::LineStrip, 5);

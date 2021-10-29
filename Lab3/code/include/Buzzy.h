@@ -21,7 +21,7 @@ Description:
 class Buzzy : public SpriteWrapper
 {
 public:
-//    Constructor
+    //    Constructor
     Buzzy(const string loadPath, const float px, const float py,
           const float scale_x, const float scale_y)
     {
@@ -33,9 +33,9 @@ public:
         this->py0 = py;
     }
 
-/*
- * Set buzzy's initial direction up
- */
+    /*
+     * Set buzzy's initial direction up
+     */
     void headUp()
     {
         if ((this->getRotation() <= 360.f && this->getRotation() > UPPER_BOUND)
@@ -45,9 +45,9 @@ public:
             this->setRotation(round(this->getRotation()) + 5.f);
     }
 
-/*
- * Set buzzy's initial direction down
- */
+    /*
+     * Set buzzy's initial direction down
+     */
     void headDown()
     {
         if ((this->getRotation() <= 360.f && this->getRotation() >= UPPER_BOUND)
@@ -57,11 +57,11 @@ public:
             this->setRotation(round(this->getRotation()) - 5.f);
     }
 
-/*  check if buzzy has intersected with other objects
- *
- * @param v2f is the other object's position
- * @return true if intersect or false if not
- * */
+    /*  check if buzzy has intersected with other objects
+     *
+     * @param v2f is the other object's position
+     * @return true if intersect or false if not
+     * */
     bool intersect(Vector2f v2f)
     {
         if (abs(this->getPosition().x - v2f.x) < 70 &&
@@ -70,11 +70,11 @@ public:
         else
             return false;
     }
-/*  check if buzzy has intersected with small objects
- *
- * @param v2f is the other object's position
- * @return true if intersects or false if not
- * */
+    /*  check if buzzy has intersected with small objects
+     *
+     * @param v2f is the other object's position
+     * @return true if intersects or false if not
+     * */
     bool intersectSmall(Vector2f v2f)
     {
         if (abs(this->getPosition().x - v2f.x) < 45 &&

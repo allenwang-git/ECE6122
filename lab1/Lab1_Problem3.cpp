@@ -25,10 +25,10 @@ using namespace std;
  * */
 class Reflection{
 public:
-    Reflection(const double posInput){
+    Reflection(const double posInput)
+    {
         xPosABInput = posInput;
     }
-//    void initialization();
     void getReflectioinTimes();
     int reflectTimes{0};
     double xPosABInput;
@@ -66,9 +66,10 @@ private:
  * @param x1, y1 are the coordinates of one point
  * @param x2, y2 are the coordinates of another point
  * */
-void Reflection::get2PointsLine(double x1, double y1, double x2, double y2){
-//   Line: (y-y1)/(x-x1) = (y-y2)/(x-x2)
-//   =>  Ax + By + C =0
+void Reflection::get2PointsLine(double x1, double y1, double x2, double y2)
+{
+    //   Line: (y-y1)/(x-x1) = (y-y2)/(x-x2)
+    //   =>  Ax + By + C =0
     incidentA = y1 - y2;
     incidentB = x2 - x1;
     incidentC = x1 * y2 - x2 * y1;
@@ -80,9 +81,10 @@ void Reflection::get2PointsLine(double x1, double y1, double x2, double y2){
  * @param x,y are intersection point coordinates
  * @return true if intersection exits and false if lines are parallel
  * */
-bool Reflection::get2LinesIntersection(double A1, double B1, double C1, double A2, double B2, double C2, double &x, double &y){
-//  A1x + B1y + C1 =0
-//  A2x + B2y + C2 =0
+bool Reflection::get2LinesIntersection(double A1, double B1, double C1, double A2, double B2, double C2, double &x, double &y)
+{
+    //  A1x + B1y + C1 =0
+    //  A2x + B2y + C2 =0
     double m = A1 * B2 - A2 * B1;
     if (m==0)
     {
@@ -101,14 +103,14 @@ bool Reflection::get2LinesIntersection(double A1, double B1, double C1, double A
  *
  * */
 #include <iomanip>
-void Reflection::getSymmetryLine(){
-
+void Reflection::getSymmetryLine()
+{
     double xx,yy;
-//    compute intersection point with every line
+    //    compute intersection point with every line
     this->get2LinesIntersection(incidentA,incidentB,incidentC,lineAB_A,lineAB_B,lineAB_C,xAB,yAB);
     this->get2LinesIntersection(incidentA,incidentB,incidentC,lineBC_A,lineBC_B,lineBC_C,xBC,yBC);
     this->get2LinesIntersection(incidentA,incidentB,incidentC,lineAC_A,lineAC_B,lineAC_C,xAC,yAC);
-//    decide the correct intersection point and compute symmetry line
+    //    decide the correct intersection point and compute symmetry line
     if (xAB< 10. && xAB> -10. && yAB - yPosAB < 1e-12 && pre_intersectLine!=AB)
     {
         symmetryA = perpendicularAB_A;
@@ -152,11 +154,11 @@ void Reflection::getSymmetryLine(){
  * */
 void Reflection::getReflectLine()
 {
-//    compute reflection line
+    //    compute reflection line
     reflectA = incidentA * (pow(symmetryB,2) - pow(symmetryA,2)) - 2.*symmetryA*symmetryB*incidentB;
     reflectB = incidentB * (pow(symmetryA,2) - pow(symmetryB,2)) - 2.*symmetryA*symmetryB*incidentA;
     reflectC = incidentC * (pow(symmetryA,2) + pow(symmetryB,2)) - 2.*symmetryC*(symmetryA*incidentA + symmetryB*incidentB);
-//    update incident line
+    //    update incident line
     incidentA = reflectA;
     incidentB = reflectB;
     incidentC = reflectC;
@@ -165,14 +167,16 @@ void Reflection::getReflectLine()
  * This function can compute the number of reflection times
  * after the beam exits the triangle.
  * */
-void Reflection::getReflectioinTimes(){
-    if (firstTime){
+void Reflection::getReflectioinTimes()
+{
+    if (firstTime)
+    {
         this->get2PointsLine(origin[0],origin[1], xPosABInput, yPosAB);
         firstTime =false;
     }
     this->getSymmetryLine();
     this->getReflectLine();
-//    check if the beam can exit this time
+    //    check if the beam can exit this time
     if ((reflectC/reflectB) <= 0.01 && abs(reflectC/reflectA) <= (0.01* sqrt(3.)) && reflectA!=0. && reflectB!=0.)
     {
         reflectTimes++;
@@ -215,7 +219,8 @@ int main(int argc, char* argv[])
         stringstream(argv[1]) >> tmpXPosInput;
         Reflection refObj(tmpXPosInput);
 
-        if (refObj.xPosABInput > -10. && refObj.xPosABInput < 10.){
+        if (refObj.xPosABInput > -10. && refObj.xPosABInput < 10.)
+        {
             refObj.getReflectioinTimes(); // begin the reflection
             strOutput = to_string(refObj.reflectTimes); // get the reflection times
         }

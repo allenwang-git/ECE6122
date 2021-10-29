@@ -24,7 +24,7 @@ using namespace std;
 class TextWrapper
 {
 public:
-//    Constructor
+    //    Constructor
     TextWrapper(const string &fontPath, const string &message, const int size, const char color,
                 const float px, const float py)
     {
@@ -41,18 +41,18 @@ public:
                        textRect.top + textRect.height / 2.0f);
         text.setPosition(px, py);
     }
-/*  set the current score text
- *  @param scores is the current score
- */
+    /*  set the current score text
+     *  @param scores is the current score
+     */
     void setScore(const int scores)
     {
         stringstream ss;
         ss << "Score: " << scores;
         text.setString(ss.str());
     }
-/*  draw the text object
- * @param window is the RenderWindow object in which the sprite is drawn
- */
+    /*  draw the text object
+     * @param window is the RenderWindow object in which the sprite is drawn
+     */
     void draw(RenderWindow &window)
     {
         window.draw(text);

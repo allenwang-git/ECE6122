@@ -26,13 +26,13 @@ using namespace std;
  * */
 int main()
 {
-//    create the window
+    //    create the window
     VideoMode vm(960, 540);
     RenderWindow window(vm, "Buzzy's Revenge");
     View view(FloatRect(0, 0, 1920, 1080));
     window.setView(view);
 
-//    create Sprite objects
+    //    create Sprite objects
     SpriteWrapper background("../graphics/background.png", 0, 0, 1, 1);
     background.setOrigin(0, 0);
     Buzzy buzzy("../graphics/smallbuzzy.png", 250, 500, 1.4f, 1.4f);
@@ -53,7 +53,7 @@ int main()
     SpriteWrapper life5("../graphics/buzzy_life.png", 170 + 4 * 60, 50, 0.5f, 0.5f);
     buzzy_lifes.push_back(life5);
 
-//  create column 1 and add woodland creatures to list
+    //  create column 1 and add woodland creatures to list
     SpriteWrapper sheep("../graphics/sheep.png", COLUMN1, 300, 1.5f, 1.5f);
     animals.push_back(&sheep);
     woodlandCol1.push_back(&sheep);
@@ -70,7 +70,7 @@ int main()
     animals.push_back(&mouse);
     woodlandCol1.push_back(&mouse);
 
-//    create column 2 and add to woodland creatures
+    //    create column 2 and add to woodland creatures
     SpriteWrapper unicorn("../graphics/angry_unicorn.png", COLUMN2, 300, 1.5f, 1.5f);
     unicorn.setOrigin(90, 50);
     animals.push_back(&unicorn);
@@ -88,10 +88,10 @@ int main()
     animals.push_back(&chicken);
     woodlandCol2.push_back(&chicken);
 
-//  create a power bar
+    //  create a power bar
     BarWrapper powerBar(500, 50, 'r', 150, 925);
 
-//  create text
+    //  create text
     TextWrapper tTitle("../fonts/KOMIKAP_.ttf", "Buzzy's Revenge", 80, 'r', 960, 200);
     TextWrapper tRestart("../fonts/KOMIKAP_.ttf", "Press Enter to Restart Game", 50, 'w', 960, 400);
     TextWrapper tExit("../fonts/KOMIKAP_.ttf", "Press Esc to Exit", 50, 'w', 960, 460);
@@ -102,17 +102,17 @@ int main()
     TextWrapper tLives("../fonts/KOMIKAP_.ttf", "Lives", 30, 'w', 80, 50);
     TextWrapper tScore("../fonts/KOMIKAP_.ttf", "Score: 99", 30, 'w', 1750, 50);
     TextWrapper tOver("../fonts/KOMIKAP_.ttf", "Game Over", 80, 'r', 960, 200);
-//  create the motion object to handle buzzy motion
+    //  create the motion object to handle buzzy motion
     Motion buzzyMotion;
 
-//  create sound
+    //  create sound
     SoundWrapper hit("../sound/chop.wav");
     SoundWrapper win("../sound/out_of_time.wav");
     SoundWrapper gameOver("../sound/death.wav");
 
-// Variables to control time itself
+    // Variables to control time itself
     Clock clock;
-// Game main loop
+    // Game main loop
     while (window.isOpen())
     {
         /******************************
@@ -139,7 +139,7 @@ int main()
                     powerBar.setSize(power);
                     tScore.setScore(score);
                 }
-//                Start the new game
+                //      Start the new game
                 if (!pausedFlag)
                 {
                     //        change buzz initial launch power
@@ -176,9 +176,9 @@ int main()
                 }
             }
         }
-//      set the buzz speed and update powerbar
+        //      set the buzz speed and update powerbar
         buzzy.movingSpeed = power * 2.f + 600;
-//      Game over, prepare to restart
+        //      Game over, prepare to restart
         if (lives == 0 && !buzzy.spinningFlag) {
             gameOverFlag = true;
             gameOver.play();
@@ -189,7 +189,7 @@ int main()
             powerBar.setSize(power);
             tScore.setScore(score);
         }
-//      Win the game, prepare to restart
+        //      Win the game, prepare to restart
         if (!column1 && !column2 && lives > 0 && !col1Spin && !col2Spin && !buzzy.spinningFlag)
         {
             gameOverFlag = false;
@@ -238,7 +238,7 @@ int main()
                 insect.movingSpeed = speed(e);
                 insect.movingFlag = true;
             }
-//            begin a new round
+            //    begin a new round
             if (!roundOver)
             {
                 buzzyMotion.t += dt.asSeconds();
@@ -247,7 +247,7 @@ int main()
                 {
                     buzzy.setPosition(buzzyMotion.getXPosition(), buzzyMotion.getYPosition());
                     buzzy.setRotation(buzzyMotion.getVelocityDirection());
-//                buzzyMotion.show();
+
                 }
                 //   hit Tiger
                 if (!evilTiger.hitFlag && buzzy.intersect(evilTiger.getPosition()))
@@ -265,7 +265,7 @@ int main()
                     power = 0;
                     buzzy.spinningFlag = true;
                 }
-                    //   hit Bulldog
+                //   hit Bulldog
                 else if (!evilBulldog.hitFlag && buzzy.intersect(evilBulldog.getPosition()))
                 {
                     hit.play();
@@ -276,12 +276,11 @@ int main()
                         column1 = false;
                     else
                         column2 = false;
-//                    buzzy.reset(BUZZY_X, BUZZY_Y, BUZZY_AGL);
                     roundOver = true;
                     power = 0;
                     buzzy.spinningFlag = true;
                 }
-                    //    hit Insect
+                //    hit Insect
                 else if (!insect.hitFlag && buzzy.intersectSmall(insect.getPosition()))
                 {
                     score += (25 * 3);
@@ -292,19 +291,19 @@ int main()
                     power = 0;
                     buzzy.spinningFlag = true;
                 }
-                    //     hit Unicorn
+                //     hit Unicorn
                 else if (!unicorn.hitFlag && buzzy.intersect(unicorn.getPosition()))
                 {
                     if (lives < 5) lives += 1;
                     unicorn.hitFlag = true;
                     hit.play();
-//                    drop down the animals above unicorn by one
+                    //  drop down the animals above unicorn by one
                     dropAnimals(unicorn);
                     roundOver = true;
                     power = 0;
                     buzzy.spinningFlag = true;
                 }
-//                hit woodland creatures
+                //    hit woodland creatures
                 else if ((column1 && buzzy.hitWoodlandCreature(woodlandCol1))
                          || (column2 && buzzy.hitWoodlandCreature(woodlandCol2)))
                 {
@@ -315,7 +314,7 @@ int main()
                     power = 0;
                     buzzy.spinningFlag = true;
                 }
-//              fly beyond the window
+                //  fly beyond the window
                 else if ((buzzy.getPosition().x > 1900 || buzzy.getPosition().x < 0
                           || buzzy.getPosition().y > 1050 || buzzy.getPosition().y < 0))
                 {
@@ -326,7 +325,7 @@ int main()
                     power = 0;
                 }
             }
-//            spin the buzzy to bottom before resetting
+            //  spin the buzzy to bottom before resetting
             if (buzzy.spinningFlag && buzzy.getPosition().y <= 1080)
             {
                 buzzy.setPosition(buzzy.getPosition().x, buzzy.getPosition().y + 0.5f);
@@ -337,7 +336,7 @@ int main()
                 buzzy.spinningFlag = false;
                 buzzy.reset(BUZZY_X, BUZZY_Y, BUZZY_AGL);
             }
-//            spin the column to bottom before disappearing
+            // spin the column to bottom before disappearing
             spinAnimals(column1, column2, unicorn);
         }
         /*******************************
@@ -377,7 +376,7 @@ int main()
                 evilBulldog.draw(window);
         }
         powerBar.drawBar(window);
-//        draw texts
+        //        draw texts
         tLives.draw(window);
         tPower.draw(window);
         tScore.draw(window);

@@ -1,6 +1,11 @@
-//
-// Created by allen on 10/22/21.
-//
+/*
+Author: Yinuo Wang
+Class: ECE 6122
+Last Date Modified: 10/23/2021
+
+Description:
+This is the header of Lab3_Problem1.cpp to define some functions and global variables.
+*/
 
 #ifndef LAB1_LAB3_PROBLEM1_H
 #define LAB1_LAB3_PROBLEM1_H
@@ -112,7 +117,7 @@ void resetImage()
     default_random_engine e(ri());
     uniform_int_distribution<int> pos(0, 9);
     int n = vec.size();
-//    generate new position
+    //    generate new position
     do
     {
         for (int i = 0; i < n; i++)
@@ -122,7 +127,7 @@ void resetImage()
         }
     }
     while (!(vec[0] < 5 && vec[1] >= 5));
-//    set new position
+    //    set new position
     for (int i = 0; i < mascots.size(); i++)
     {
         (*mascots[i]).setPosition(getInitPos(vec[i]));
@@ -137,12 +142,12 @@ void resetImage()
         (*animals[j]).posTag = vec[j + 2];
         (*animals[j]).hitFlag = false;
     }
-//    set woodland animals
+    //    set woodland animals
     woodlandCol1.clear();
     woodlandCol2.clear();
     for (int i = 0; i < animals.size(); ++i)
     {
-//        unicorn doesn't belong to woodland
+        //        unicorn doesn't belong to woodland
         if (i != 4)
         {
             if ((*animals[i]).posTag < 5)
@@ -174,7 +179,7 @@ void initializeGame()
  * */
 void spinAnimals(bool col1, bool col2, SpriteWrapper &unicorn)
 {
-//    SPIN COLUMN 1
+    //    SPIN COLUMN 1
     if (!column1 && (*woodlandCol1[0]).getPosition().y <= 1080)
     {
         col1Spin = true;
@@ -202,7 +207,7 @@ void spinAnimals(bool col1, bool col2, SpriteWrapper &unicorn)
         col1Spin = false;
 
     }
-// SPIN COLUMN 2
+    // SPIN COLUMN 2
     if (!column2 && (*woodlandCol2[0]).getPosition().y <= 1080)
     {
         col2Spin = true;
@@ -235,38 +240,38 @@ void spinAnimals(bool col1, bool col2, SpriteWrapper &unicorn)
  * Drop down the animal above unicorn by one
  * @param unicorn is the unicorn sprite object
  * */
-    void dropAnimals(SpriteWrapper &unicorn)
+void dropAnimals(SpriteWrapper &unicorn)
+{
+    if (unicorn.posTag < 5)
     {
-        if (unicorn.posTag < 5)
+        for (auto w: woodlandCol1)
         {
-            for (auto w: woodlandCol1)
+            if ((*w).posTag < unicorn.posTag)
             {
-                if ((*w).posTag < unicorn.posTag)
-                {
-                    (*w).posTag++;
-                    (*w).setPosition((*w).getPosition().x, (*w).getPosition().y + 150);
-                }
-            }
-        }
-        else
-        {
-            for (auto w: woodlandCol2)
-            {
-                if ((*w).posTag < unicorn.posTag)
-                {
-                    (*w).posTag++;
-                    (*w).setPosition((*w).getPosition().x, (*w).getPosition().y + 150);
-                }
-            }
-        }
-        for (auto m: mascots)
-        {
-            if ((*m).posTag < unicorn.posTag)
-            {
-                (*m).posTag++;
-                (*m).setPosition((*m).getPosition().x, (*m).getPosition().y + 150);
+                (*w).posTag++;
+                (*w).setPosition((*w).getPosition().x, (*w).getPosition().y + 150);
             }
         }
     }
+    else
+    {
+        for (auto w: woodlandCol2)
+        {
+            if ((*w).posTag < unicorn.posTag)
+            {
+                (*w).posTag++;
+                (*w).setPosition((*w).getPosition().x, (*w).getPosition().y + 150);
+            }
+        }
+    }
+    for (auto m: mascots)
+    {
+        if ((*m).posTag < unicorn.posTag)
+        {
+            (*m).posTag++;
+            (*m).setPosition((*m).getPosition().x, (*m).getPosition().y + 150);
+        }
+    }
+}
 
 #endif //LAB1_LAB3_PROBLEM1_H
