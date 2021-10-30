@@ -1,4 +1,0 @@
-/home/allen/CLionProjects/ECE6122/lab4/build/CMakeFiles/edit_cache.dir
-/home/allen/CLionProjects/ECE6122/lab4/build/CMakeFiles/client.dir
-/home/allen/CLionProjects/ECE6122/lab4/build/CMakeFiles/rebuild_cache.dir
-/home/allen/CLionProjects/ECE6122/lab4/build/CMakeFiles/server.dir
