@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/server.dir/tcpServer.cpp.o  -o server -Wl,-rpath,/home/allen/CLionProjects/ECE6122/lab4/SFML-2.5.1/lib ../SFML-2.5.1/lib/libsfml-network.so.2.5.1 ../SFML-2.5.1/lib/libsfml-system.so.2.5.1 

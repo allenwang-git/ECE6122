@@ -1,6 +1,14 @@
-//
-// Created by allen on 10/29/21.
-//
+/*
+Author: Yinuo Wang
+Class: ECE 6122
+Last Date Modified: 10/30/2021
+
+Description:
+This program use sfml socket to create a tcp server listening specific port and connect to 5 clients.
+If input is not a valid port number, corresponding error message will be displayed on command line.
+The program log will be output into file "server.log".
+To run this program, using "./server 6xxxx" on command line
+*/
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -9,56 +17,136 @@
 
 using namespace std;
 using namespace sf;
+
 /*
- *
+ * This is the TCP server loop
+ * @param port is the port number server will listen
  * */
-void runTcpServer(unsigned short port)
-{
+void runTcpServer(unsigned short port) {
+    // Create a file for output result
+    fstream outputFile;
+    outputFile.open("server.log", ios::out | ios::app);
     // Create a server socket to accept new connections
     sf::TcpListener listener;
 
     // Listen to the given port for incoming connections
     if (listener.listen(port) != sf::Socket::Done)
         return;
-    std::cout << "Server is listening to port " << port << ", waiting for connections... " << std::endl;
+    cout << "Server is listening to port " << port << ", waiting for connections... " << std::endl;
+    //  Create a selecter to handle multi clients
+    sf::SocketSelector selector;
+    selector.add(listener);
+    short clientNum = 0;
+    vector<sf::TcpSocket *> sockets;
 
-    // Wait for a connection
-    sf::TcpSocket socket;
-    if (listener.accept(socket) != sf::Socket::Done)
-        return;
-    std::cout << "Client connected: " << socket.getRemoteAddress() << std::endl;
+    while (true) {
+        // Make the selector wait for data on any socket
+        if (selector.wait()) {
+            // Test the listener
+            if (selector.isReady(listener)) {
+                if (clientNum < 5) {
+                    // The listener is ready: there is a pending connection
+                    sf::TcpSocket *socket = new sf::TcpSocket;
+                    if (listener.accept(*socket) == sf::Socket::Done) {
+                        clientNum++;
+                        // Add the new client to the clients list
+                        sockets.push_back(socket);
+                        // Add the new client to the selector so that we will be notified when he sends something
+                        selector.add(*socket);
+                        cout << "Client connected: " << (*socket).getRemoteAddress() << std::endl;
+                        if (outputFile.is_open())
+                            outputFile << "client connected" << endl;
+                    } else {
+                        // Error, we won't get a new connection, delete the socket
+                        delete socket;
+                    }
+                }
+            } else {
+                // The listener socket is not ready, test all other sockets (the clients)
+                for (vector<sf::TcpSocket *>::iterator it = sockets.begin(); it != sockets.end(); ++it) {
+//                for (auto *s:sockets) {
+                    sf::TcpSocket &socket = **it;
+//                    sf::TcpSocket &socket = **it;
+                    if (selector.isReady(socket)) {
+                        // The client has sent some data, we can receive it
+                        char clientMessage[1000] = {0};
+                        size_t received;
+                        if (socket.receive(clientMessage, sizeof(clientMessage), received) == sf::Socket::Done) {
+                            cout << "Received Message from the client: \"" << clientMessage << "\"" << std::endl;
+                            //    Output prime factors to file
+                            if (outputFile.good())
+                                outputFile << clientMessage << endl;
+                        }
+                    }
+                    Packet packet;
+                    if (socket.send(packet) == sf::Socket::Disconnected) {
+                        outputFile << "Client disconnected" << endl;
+                        sockets.erase(it);
+                        selector.remove(socket);
+                        clientNum--;
+                        cout << "Client Disconnected, current clients:" << sockets.size() << endl;
+                    }
 
-    // Send a message to the connected client
-    const char out[] = "Hi, I'm the server";
-    if (socket.send(out, sizeof(out)) != sf::Socket::Done)
-        return;
-    std::cout << "Message sent to the client: \"" << out << "\"" << std::endl;
+                }
+            }
+        }
+    }
 
-    // Receive a message back from the client
-    char in[128];
-    std::size_t received;
-    if (socket.receive(in, sizeof(in), received) != sf::Socket::Done)
-        return;
-    std::cout << "Answer received from the client: \"" << in << "\"" << std::endl;
+
+//    if (listener.accept(socket)!=sf::Socket::Done)
+//    {
+//        return;
+//    }
+//    else
+//    {
+//        cout << "Client connected: " << socket.getRemoteAddress() << std::endl;
+//        if (outputFile.good())
+//            outputFile << "client connected\n";
+//    }
+//    if (socket.getRemoteAddress	() != sf::IpAddress::None)
+//        if (outputFile.good())
+//        {
+//            outputFile << "client disconnected\n";
+//        }
+//
+//
+//
+//
+//    // Receive a message  from the client
+//    char clientMessage[1000];
+//    std::size_t received;
+//    do {
+//        socket.receive(clientMessage, sizeof(clientMessage), received);
+//        cout << "Received Message from the client: \"" << clientMessage << "\"" << std::endl;
+//        //    Output prime factors to file
+//        if (outputFile.good())
+//        {
+//            outputFile << clientMessage<<endl;
+//        }
+//        else
+//        {
+//            cout << "[ECE6122-Lab4] Can not open server.log\n";
+//        }
+//    }
+//    while (socket.receive(clientMessage, sizeof(clientMessage), received) != sf::Socket::Disconnected);
+
+
 }
 
 /*
- * This function is used to check whether an input is valid or not.
+ * This function is used to check whether a port is valid or not.
  *
- * @param strInput input string need to be checked
- * @param validOutput output the valid number
+ * @param strInput input port need to be checked
+ * @param validOutput output the valid port number
  * @return true for valid input and false for invalid input
  */
-bool isValidInput(const string strInput, unsigned short & validOutput)
-{
+bool isValidInput(const string strInput, unsigned short &validOutput) {
     bool validFlag = true;
 
     unsigned long tmpValid;
     //    check the input is a number or not
-    for (auto chInput : strInput)
-    {
-        if(!isdigit(chInput))
-        {
+    for (auto chInput: strInput) {
+        if (!isdigit(chInput)) {
             validFlag = false;
             return validFlag;
         }
@@ -79,76 +167,36 @@ bool isValidInput(const string strInput, unsigned short & validOutput)
 }
 
 /*
- *
+ * This is the main function to parse command line arguments
+ * and call TCP server function.
  * */
-int main(int argc, char* argv[])
-{
-    // Choose an arbitrary port for opening sockets
+int main(int argc, char *argv[]) {
+    // Create a port for opening sockets
     unsigned short port;
-    // Create a file for output result
-    fstream outputFile("server.log", ios::out | ios::app);
     // check input
-    if (argc != 2)
-    {
-        cout<< "Invalid command line argument detected: ";
-        for (int i=1;i<argc;i++)
-        {
-            cout<< argv[i] <<" ";
-        }
-        cout << "\nPlease check your values and press any key to end the program!\n";
-    }
-    else
-    {
-        if(!isValidInput(argv[1],port))
-        {
-            cout<< "Invalid command line argument detected: "<<argv[1]<<endl
-                << "Please check your values and press any key to end the program!\n";
+    if (argc != 2) {
+        if (argc == 1) {
+            cout << "Invalid command line argument detected: (no argument input)";
+            cout << "\nPlease check your values and press Enter key to end the program!\n";
+        } else {
+            cout << "Invalid command line argument detected: ";
+            for (int i = 1; i < argc; i++) {
+                cout << argv[i] << " ";
+            }
+            cout << "\nPlease check your values and press Enter key to end the program!\n";
         }
     }
-
-
-
-    // TCP, UDP or connected UDP ?
-//    char protocol;
-//    std::cout << "Do you want to use TCP (t) or UDP (u)? ";
-//    std::cin  >> protocol;
-
-    // Client or server ?
-    char who;
-    std::cout << "Do you want to be a server (s) or a client (c)? ";
-    std::cin  >> who;
-
-    runTcpServer(port);
-
-//    if (protocol == 't')
-//    {
-//        // Test the TCP protocol
-//        if (who == 's')
-//            runTcpServer(port);
-//        else
-//            runTcpClient(port);
-//    }
-//    else
-//    {
-//        // Test the unconnected UDP protocol
-//        if (who == 's')
-//            runUdpServer(port);
-//        else
-//            runUdpClient(port);
-//    }
-
+    else {
+        if (!isValidInput(argv[1], port)) {
+            cout << "Invalid command line argument detected: " << argv[1] << endl
+                 << "Please check your values and press Enter key to end the program!\n";
+        } else {
+            runTcpServer(port);
+        }
+    }
     // Wait until the user presses 'enter' key
-    std::cout << "Press enter to exit..." << std::endl;
+    std::cout << "Press Enter to exit..." << std::endl;
     std::cin.ignore(10000, '\n');
     std::cin.ignore(10000, '\n');
-    //    Output prime factors to file
-    if (outputFile.good())
-    {
-//        outputFile << integralValue;
-    }
-    else
-    {
-        cout << "[ECE6122-Lab4] Can not open server.log\n";
-    }
     return EXIT_SUCCESS;
 }
