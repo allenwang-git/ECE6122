@@ -22,7 +22,8 @@ using namespace sf;
  * This is the TCP server loop
  * @param port is the port number server will listen
  * */
-void runTcpServer(unsigned short port) {
+void runTcpServer(unsigned short port)
+{
     // Create a file for output result
     fstream outputFile;
     outputFile.open("server.log", ios::out | ios::app);
@@ -39,15 +40,20 @@ void runTcpServer(unsigned short port) {
     short clientNum = 0;
     vector<sf::TcpSocket *> sockets;
 
-    while (true) {
+    while (true)
+    {
         // Make the selector wait for data on any socket
-        if (selector.wait()) {
+        if (selector.wait())
+        {
             // Test the listener
-            if (selector.isReady(listener)) {
-                if (clientNum < 5) {
+            if (selector.isReady(listener))
+            {
+                if (clientNum < 5)
+                {
                     // The listener is ready: there is a pending connection
                     sf::TcpSocket *socket = new sf::TcpSocket;
-                    if (listener.accept(*socket) == sf::Socket::Done) {
+                    if (listener.accept(*socket) == sf::Socket::Done)
+                    {
                         clientNum++;
                         // Add the new client to the clients list
                         sockets.push_back(socket);
@@ -56,22 +62,29 @@ void runTcpServer(unsigned short port) {
                         cout << "Client connected: " << (*socket).getRemoteAddress() << std::endl;
                         if (outputFile.is_open())
                             outputFile << "client connected" << endl;
-                    } else {
+                    }
+                    else
+                    {
                         // Error, we won't get a new connection, delete the socket
                         delete socket;
                     }
                 }
-            } else {
+            }
+            else
+            {
                 // The listener socket is not ready, test all other sockets (the clients)
-                for (vector<sf::TcpSocket *>::iterator it = sockets.begin(); it != sockets.end(); ++it) {
+                for (vector<sf::TcpSocket *>::iterator it = sockets.begin(); it != sockets.end(); ++it)
+                {
 //                for (auto *s:sockets) {
                     sf::TcpSocket &socket = **it;
 //                    sf::TcpSocket &socket = **it;
-                    if (selector.isReady(socket)) {
+                    if (selector.isReady(socket))
+                    {
                         // The client has sent some data, we can receive it
                         char clientMessage[1000] = {0};
                         size_t received;
-                        if (socket.receive(clientMessage, sizeof(clientMessage), received) == sf::Socket::Done) {
+                        if (socket.receive(clientMessage, sizeof(clientMessage), received) == sf::Socket::Done)
+                        {
                             cout << "Received Message from the client: \"" << clientMessage << "\"" << std::endl;
                             //    Output prime factors to file
                             if (outputFile.good())
@@ -79,7 +92,8 @@ void runTcpServer(unsigned short port) {
                         }
                     }
                     Packet packet;
-                    if (socket.send(packet) == sf::Socket::Disconnected) {
+                    if (socket.send(packet) == sf::Socket::Disconnected)
+                    {
                         outputFile << "Client disconnected" << endl;
                         sockets.erase(it);
                         selector.remove(socket);
@@ -140,17 +154,18 @@ void runTcpServer(unsigned short port) {
  * @param validOutput output the valid port number
  * @return true for valid input and false for invalid input
  */
-bool isValidInput(const string strInput, unsigned short &validOutput) {
+bool isValidInput(const string strInput, unsigned short &validOutput)
+{
     bool validFlag = true;
-
     unsigned long tmpValid;
     //    check the input is a number or not
-    for (auto chInput: strInput) {
-        if (!isdigit(chInput)) {
+    for (auto chInput: strInput)
+    {
+        if (!isdigit(chInput))
+        {
             validFlag = false;
             return validFlag;
         }
-
     }
     //    check the port number is valid or not
     stringstream(strInput) >> tmpValid;
@@ -170,27 +185,37 @@ bool isValidInput(const string strInput, unsigned short &validOutput) {
  * This is the main function to parse command line arguments
  * and call TCP server function.
  * */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     // Create a port for opening sockets
     unsigned short port;
     // check input
-    if (argc != 2) {
-        if (argc == 1) {
+    if (argc != 2)
+    {
+        if (argc == 1)
+        {
             cout << "Invalid command line argument detected: (no argument input)";
             cout << "\nPlease check your values and press Enter key to end the program!\n";
-        } else {
+        }
+        else
+        {
             cout << "Invalid command line argument detected: ";
-            for (int i = 1; i < argc; i++) {
+            for (int i = 1; i < argc; i++)
+            {
                 cout << argv[i] << " ";
             }
             cout << "\nPlease check your values and press Enter key to end the program!\n";
         }
     }
-    else {
-        if (!isValidInput(argv[1], port)) {
+    else
+    {
+        if (!isValidInput(argv[1], port))
+        {
             cout << "Invalid command line argument detected: " << argv[1] << endl
                  << "Please check your values and press Enter key to end the program!\n";
-        } else {
+        }
+        else
+        {
             runTcpServer(port);
         }
     }
