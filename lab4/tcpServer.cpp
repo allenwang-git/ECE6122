@@ -14,10 +14,10 @@ To run this program, using "./server 6xxxx" on command line
 #include <iostream>
 #include <cstdlib>
 #include <SFML/Network.hpp>
+#include <vector>
 
 using namespace std;
 using namespace sf;
-
 /*
  * This is the TCP server loop
  * @param port is the port number server will listen
@@ -25,8 +25,7 @@ using namespace sf;
 void runTcpServer(unsigned short port)
 {
     // Create a file for output result
-    fstream outputFile;
-    outputFile.open("server.log", ios::out | ios::app);
+    fstream outputFile("server.log", ios::out | ios::app);
     // Create a server socket to accept new connections
     sf::TcpListener listener;
 
@@ -46,10 +45,10 @@ void runTcpServer(unsigned short port)
         if (selector.wait())
         {
             // Test the listener
-            if (selector.isReady(listener))
+            if (clientNum < 5 && selector.isReady(listener))
             {
-                if (clientNum < 5)
-                {
+//                if ()
+//                {
                     // The listener is ready: there is a pending connection
                     sf::TcpSocket *socket = new sf::TcpSocket;
                     if (listener.accept(*socket) == sf::Socket::Done)
@@ -59,25 +58,22 @@ void runTcpServer(unsigned short port)
                         sockets.push_back(socket);
                         // Add the new client to the selector so that we will be notified when he sends something
                         selector.add(*socket);
-                        cout << "Client connected: " << (*socket).getRemoteAddress() << std::endl;
-                        if (outputFile.is_open())
-                            outputFile << "client connected" << endl;
+                        cout << "Client connected: " << (*socket).getRemoteAddress() << " current clients: "<<clientNum<<std::endl;
+                            outputFile << "Client connected" << endl;
                     }
                     else
                     {
                         // Error, we won't get a new connection, delete the socket
                         delete socket;
                     }
-                }
+//                }
             }
             else
             {
                 // The listener socket is not ready, test all other sockets (the clients)
                 for (vector<sf::TcpSocket *>::iterator it = sockets.begin(); it != sockets.end(); ++it)
                 {
-//                for (auto *s:sockets) {
                     sf::TcpSocket &socket = **it;
-//                    sf::TcpSocket &socket = **it;
                     if (selector.isReady(socket))
                     {
                         // The client has sent some data, we can receive it
@@ -90,61 +86,20 @@ void runTcpServer(unsigned short port)
                             if (outputFile.good())
                                 outputFile << clientMessage << endl;
                         }
-                    }
-                    Packet packet;
-                    if (socket.send(packet) == sf::Socket::Disconnected)
-                    {
-                        outputFile << "Client disconnected" << endl;
-                        sockets.erase(it);
-                        selector.remove(socket);
-                        clientNum--;
-                        cout << "Client Disconnected, current clients:" << sockets.size() << endl;
-                    }
+                        Packet packet;
+                        if (socket.send(packet) == sf::Socket::Disconnected)
+                        {
+                            outputFile << "Client disconnected" << endl;
+                            selector.remove(socket);
+                            clientNum--;
+                            cout << "Client Disconnected, current clients: "  << clientNum<< endl;
 
+                        }
+                     }
                 }
             }
         }
     }
-
-
-//    if (listener.accept(socket)!=sf::Socket::Done)
-//    {
-//        return;
-//    }
-//    else
-//    {
-//        cout << "Client connected: " << socket.getRemoteAddress() << std::endl;
-//        if (outputFile.good())
-//            outputFile << "client connected\n";
-//    }
-//    if (socket.getRemoteAddress	() != sf::IpAddress::None)
-//        if (outputFile.good())
-//        {
-//            outputFile << "client disconnected\n";
-//        }
-//
-//
-//
-//
-//    // Receive a message  from the client
-//    char clientMessage[1000];
-//    std::size_t received;
-//    do {
-//        socket.receive(clientMessage, sizeof(clientMessage), received);
-//        cout << "Received Message from the client: \"" << clientMessage << "\"" << std::endl;
-//        //    Output prime factors to file
-//        if (outputFile.good())
-//        {
-//            outputFile << clientMessage<<endl;
-//        }
-//        else
-//        {
-//            cout << "[ECE6122-Lab4] Can not open server.log\n";
-//        }
-//    }
-//    while (socket.receive(clientMessage, sizeof(clientMessage), received) != sf::Socket::Disconnected);
-
-
 }
 
 /*

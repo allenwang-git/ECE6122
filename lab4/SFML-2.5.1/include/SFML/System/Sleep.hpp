@@ -32,7 +32,8 @@
 #include <SFML/System/Time.hpp>
 
 
-namespace sf {
+namespace sf
+{
 ////////////////////////////////////////////////////////////
 /// \ingroup system
 /// \brief Make the current thread sleep for a given duration
@@ -43,7 +44,7 @@ namespace sf {
 /// \param duration Time to sleep
 ///
 ////////////////////////////////////////////////////////////
-    void SFML_SYSTEM_API sleep(Time duration);
+void SFML_SYSTEM_API sleep(Time duration);
 
 } // namespace sf
 

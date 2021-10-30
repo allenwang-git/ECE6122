@@ -27,13 +27,8 @@
 /// \brief Helper functions to copy sf::Transform to sf::Glsl::Mat3/4
 ///
 ////////////////////////////////////////////////////////////
-void SFML_GRAPHICS_API
-
-copyMatrix(const Transform &source, Matrix<3, 3> &dest);
-
-void SFML_GRAPHICS_API
-
-copyMatrix(const Transform &source, Matrix<4, 4> &dest);
+void SFML_GRAPHICS_API copyMatrix(const Transform& source, Matrix<3, 3>& dest);
+void SFML_GRAPHICS_API copyMatrix(const Transform& source, Matrix<4, 4>& dest);
 
 ////////////////////////////////////////////////////////////
 /// \brief Copy array-based matrix with given number of elements
@@ -42,29 +37,23 @@ copyMatrix(const Transform &source, Matrix<4, 4> &dest);
 /// <algorithm> and MSVC's annoying 4996 warning in header
 ///
 ////////////////////////////////////////////////////////////
-void SFML_GRAPHICS_API
-
-copyMatrix(const float *source, std::size_t elements, float *dest);
+void SFML_GRAPHICS_API copyMatrix(const float* source, std::size_t elements, float* dest);
 
 ////////////////////////////////////////////////////////////
 /// \brief Helper functions to copy sf::Color to sf::Glsl::Vec4/Ivec4
 ///
 ////////////////////////////////////////////////////////////
-void SFML_GRAPHICS_API
-
-copyVector(const Color &source, Vector4<float> &dest);
-
-void SFML_GRAPHICS_API
-
-copyVector(const Color &source, Vector4<int> &dest);
+void SFML_GRAPHICS_API copyVector(const Color& source, Vector4<float>& dest);
+void SFML_GRAPHICS_API copyVector(const Color& source, Vector4<int>& dest);
 
 
 ////////////////////////////////////////////////////////////
 /// \brief Matrix type, used to set uniforms in GLSL
 ///
 ////////////////////////////////////////////////////////////
-template<std::size_t Columns, std::size_t Rows>
-struct Matrix {
+template <std::size_t Columns, std::size_t Rows>
+struct Matrix
+{
     ////////////////////////////////////////////////////////////
     /// \brief Construct from raw data
     ///
@@ -73,7 +62,8 @@ struct Matrix {
     ///                are copied to the instance.
     ///
     ////////////////////////////////////////////////////////////
-    explicit Matrix(const float *pointer) {
+    explicit Matrix(const float* pointer)
+    {
         copyMatrix(pointer, Columns * Rows, array);
     }
 
@@ -86,7 +76,8 @@ struct Matrix {
     /// \param transform Object containing a transform.
     ///
     ////////////////////////////////////////////////////////////
-    Matrix(const Transform &transform) {
+    Matrix(const Transform& transform)
+    {
         copyMatrix(transform, *this);
     }
 
@@ -97,17 +88,19 @@ struct Matrix {
 /// \brief 4D vector type, used to set uniforms in GLSL
 ///
 ////////////////////////////////////////////////////////////
-template<typename T>
-struct Vector4 {
+template <typename T>
+struct Vector4
+{
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor, creates a zero vector
     ///
     ////////////////////////////////////////////////////////////
     Vector4() :
-            x(0),
-            y(0),
-            z(0),
-            w(0) {
+    x(0),
+    y(0),
+    z(0),
+    w(0)
+    {
     }
 
     ////////////////////////////////////////////////////////////
@@ -120,10 +113,11 @@ struct Vector4 {
     ///
     ////////////////////////////////////////////////////////////
     Vector4(T X, T Y, T Z, T W) :
-            x(X),
-            y(Y),
-            z(Z),
-            w(W) {
+    x(X),
+    y(Y),
+    z(Z),
+    w(W)
+    {
     }
 
     ////////////////////////////////////////////////////////////
@@ -132,12 +126,13 @@ struct Vector4 {
     /// \param other 4D vector of different type
     ///
     ////////////////////////////////////////////////////////////
-    template<typename U>
-    explicit Vector4(const Vector4<U> &other) :
-            x(static_cast<T>(other.x)),
-            y(static_cast<T>(other.y)),
-            z(static_cast<T>(other.z)),
-            w(static_cast<T>(other.w)) {
+    template <typename U>
+    explicit Vector4(const Vector4<U>& other) :
+    x(static_cast<T>(other.x)),
+    y(static_cast<T>(other.y)),
+    z(static_cast<T>(other.z)),
+    w(static_cast<T>(other.w))
+    {
     }
 
     ////////////////////////////////////////////////////////////
@@ -147,7 +142,7 @@ struct Vector4 {
     ///              for floats, and left as-is for ints.
     ///
     ////////////////////////////////////////////////////////////
-    Vector4(const Color &color)
+    Vector4(const Color& color)
     // uninitialized
     {
         copyVector(color, *this);

@@ -39,7 +39,8 @@
 
 struct ANativeActivity;
 
-namespace sf {
+namespace sf
+{
 ////////////////////////////////////////////////////////////
 /// \ingroup system
 /// \brief Return a pointer to the Android native activity
@@ -53,7 +54,7 @@ namespace sf {
 /// \sfplatform{Android,SFML/System/NativeActivity.hpp}
 ///
 ////////////////////////////////////////////////////////////
-    SFML_SYSTEM_API ANativeActivity *getNativeActivity();
+SFML_SYSTEM_API ANativeActivity* getNativeActivity();
 
 } // namespace sf
 

@@ -18,6 +18,8 @@ using namespace std;
 
 /*
  * This is the tcp client loop function
+ * @param server is the ip address from user input
+ * @param port is the port number form user input
  * */
 void runTcpClient(sf::IpAddress server, unsigned short port)
 {
