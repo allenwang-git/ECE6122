@@ -7,7 +7,9 @@ set(SFML_INCLUDE_DIR "./SFML-2.5.1/include")
 set(SFML_LIBRARY_DIR "./SFML-2.5.1/lib")
 
 include_directories(${SFML_INCLUDE_DIR})
-find_package(SFML COMPONENTS network REQUIRED)
+find_package(SFML COMPONENTS network system window graphics REQUIRED)
 
-add_executable(lab4 Sockets.cpp TCP.cpp UDP.cpp)
-target_link_libraries(lab4 sfml-network)
+#add_executable(client tcpClient.cpp)
+add_executable(server tcpServer.cpp)
+#target_link_libraries(client sfml-network)
+target_link_libraries(server sfml-network sfml-system)

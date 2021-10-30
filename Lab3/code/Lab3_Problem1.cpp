@@ -17,7 +17,7 @@ Description:
 */
 #include <iostream>
 #include "include/Lab3_Problem1.h"
-
+#include "../SFML-2.5.1/include/SFML/Network.hpp"
 using namespace sf;
 using namespace std;
 
