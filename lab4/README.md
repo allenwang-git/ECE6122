@@ -18,10 +18,10 @@ make
 
 ### BUild on pace-ice (GCC-10.1)
 I have provide the executable file in this folder, if you want to build again, please follow the guide:
-(Following steps can not be run in vnc command line, only vpn command line works)
+(**Following steps can not be run in VNC, only vpn command line can build without errors**)
 ```
 cd lab4
-./gccBuild.sh
+sh ./gccBuild.sh
 ```
 
 ## Run
@@ -34,6 +34,7 @@ cd lab4
 ./client 127.0.0.1 6XXXX
 ```
 ### Run in pace-ice
+(following steps can be run on VNC)
 ```
 ./server.sh 6XXXX
 ./client.sh localhost 6XXXX

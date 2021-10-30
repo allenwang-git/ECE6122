@@ -7,4 +7,5 @@ module load gcc/10.1.0
 g++ tcpServer.cpp -o server -L./SFML-2.5.1/lib -lsfml-network -lsfml-system -I./SFML-2.5.1/include
 g++ tcpClient.cpp -o client -L./SFML-2.5.1/lib -lsfml-network -lsfml-system -I./SFML-2.5.1/include
 
-
+# add executed
+chmod +x server.sh client.sh
