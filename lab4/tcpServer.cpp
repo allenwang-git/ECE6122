@@ -47,8 +47,7 @@ void runTcpServer(unsigned short port)
             // Test the listener
             if (clientNum < 5 && selector.isReady(listener))
             {
-//                if ()
-//                {
+
                     // The listener is ready: there is a pending connection
                     sf::TcpSocket *socket = new sf::TcpSocket;
                     if (listener.accept(*socket) == sf::Socket::Done)
@@ -66,7 +65,7 @@ void runTcpServer(unsigned short port)
                         // Error, we won't get a new connection, delete the socket
                         delete socket;
                     }
-//                }
+
             }
             else
             {
