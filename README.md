@@ -1,17 +1,25 @@
 # ECE6122
 
-## Lab2-1
+## lab0
+C++ iostream
 
-```
-g++ Lab_Problem1.cpp -o p1 -O3 -pthread
-time ./p1 10000008
-time ./p1 
-```
+## lab1 
+Basic C++ 
 
-## Lab2-2
+## lab2
+Multi-thread
 
-```
-g++ Lab_Problem2.cpp -o p2 -fopenmp
-time ./p2 1000000000
-```
+## lab3
+SFML 2D Game
 
+## lab4
+SFML TCP Socket
+
+## lab5
+
+
+## lab6
+
+
+## Gatech-Buzzy-Bowl
+Final project -- Multi-thread && OpenGL

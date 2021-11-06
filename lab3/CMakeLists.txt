@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(Lab3)
+project(lab3)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -16,7 +16,6 @@ include_directories(code/include)
 
 file(GLOB sources "code/*.cpp")
 find_package(SFML COMPONENTS graphics audio window system REQUIRED)
-#add_executable(lab3 ${sources})
-#target_link_libraries(lab3 sfml-audio sfml-graphics sfml-window sfml-system)
-add_executable(server tcpServer.cpp)
-target_link_libraries(server sfml-network sfml-system)
+add_executable(lab3 ${sources})
+target_link_libraries(lab3 sfml-audio sfml-graphics sfml-window sfml-system)
+
