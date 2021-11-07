@@ -1,4 +1,5 @@
 #! /bin/bash
+# 11/01/2021
 
 # config gcc version
 module load gcc/10.1.0

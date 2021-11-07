@@ -337,9 +337,9 @@ configure_file(src/glfw3.pc.in src/glfw3.pc @ONLY)
 #--------------------------------------------------------------------
 add_subdirectory(src)
 
-if (GLFW_BUILD_EXAMPLES)
-    add_subdirectory(examples)
-endif()
+#if (GLFW_BUILD_EXAMPLES)
+#    add_subdirectory(examples)
+#endif()
 
 if (GLFW_BUILD_TESTS)
     add_subdirectory(tests)
