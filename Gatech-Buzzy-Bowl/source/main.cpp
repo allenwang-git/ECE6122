@@ -139,7 +139,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Open a window and create its OpenGL context
-    GLFWwindow* window = glfwCreateWindow(1920, 1080, "Playground", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1024, 512, "Playground", NULL, NULL);
     if (window == NULL)
     {
         fprintf(stderr,
@@ -167,32 +167,30 @@ int main(void)
      * **************************************************************************/
 
     static const GLfloat g_vertex_buffer_data[] =
-            {//Normalized Device Coordinates
-                    //x      y   depth   texture
-                    -1.f,-0.5f, 0.0f,  0.f, 0.f,       // left bottom
-                    1.f, -0.5f, 0.0f,  1.0f,0.f,    // right bottom
-                    1.f,  0.5f, 0.0f,  1.f, 1.f,// right top
-                    -1.f, 0.5f, 0.0f,  0.f, 1.f// left top
+            {
+                //Normalized Device Coordinates
+                //x      y   depth   texture
+                -1.f,-0.5f, 0.0f,  0.06f, 0.f,  // left bottom
+                1.f, -0.5f, 0.0f,  1.0f,0.f,    // right bottom
+                1.f,  0.5f, 0.0f,  1.f, 1.f,    // right top
+                -1.f, 0.5f, 0.0f,  0.06f, 1.f   // left top
             };
     GLuint indices[] =
             {
-                    0,1,2, // first triangle
-                    3,0,2  // second triangle
+                0,1,2, // first triangle
+                3,0,2  // second triangle
             };
     // Create and compile our GLSL program from the shaders
-    GLuint shaderProgram = LoadShaders( "SimpleVertexShader.vertexshader",
-                                        "SimpleFragmentShader.fragmentshader" );
+    GLuint shaderProgram = LoadShaders( "VertexShader.vertexshader",
+                                        "FragmentShader.fragmentshader" );
     // Load the texture using any two methods
     GLuint texture = loadBMP_custom("../ff.bmp");
-    if (!texture)
-        cout<<"failed to load bmp."<<endl;
+
     // Get a handle for our "myTextureSampler" uniform
     GLuint TextureID  = glGetUniformLocation(shaderProgram, "ffTexture");
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -220,11 +218,10 @@ int main(void)
     GLuint MatrixID = glGetUniformLocation(shaderProgram, "MVP");
     // Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
     glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-    // Or, for an ortho camera :
-    //glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
+
     // Camera matrix
     glm::mat4 View = glm::lookAt(
-            glm::vec3(0,-2,3), // Camera is at (4,3,3), in World Space
+            glm::vec3(0,-1,3), // Camera is at (4,3,3), in World Space
             glm::vec3(0,0,0), // and looks at the origin
             glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
     );
@@ -232,18 +229,16 @@ int main(void)
     glm::mat4 Model = glm::mat4(1.0f);
     // Our ModelViewProjection : multiplication of our 3 matrices
     glm::mat4 MVP = Projection * View * Model; // Remember, matrix multiplication is the other way around
-
-
-
-    // 1rst attribute buffer : vertices
+    // 1st attribute buffer : vertices
     glVertexAttribPointer(
             0,                  // attribute no.
             3,                  // size
             GL_FLOAT,           // type
             GL_FALSE,           // normalized?
-            5*sizeof(float),                  // stride
-            (void*)0            // array buffer offset
+            5*sizeof(float),   // stride
+            (void*)0           // array buffer offset
     );
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glEnableVertexAttribArray(0);
     // 2nd attribute buffer
     glVertexAttribPointer(
@@ -253,11 +248,9 @@ int main(void)
             GL_FALSE,
             5*sizeof(float),
             (void*)(3*sizeof(float))
-            );
+    );
     glEnableVertexAttribArray(1);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
     /* **********************************************************************************
      * Draw something
      * ************************************************************************************/
@@ -266,29 +259,24 @@ int main(void)
         // Dark blue background
         glClearColor(0.4f, 0.4f, 0.4f, 0.0f);
         // clear screen before a new render
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
         // Use our shader
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
 
+        // Send our transformation to the currently bound shader,in the "MVP" uniform
+        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
         // Bind our texture in texture Unit 0
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
         // Set our "myTextureSampler" sampler to use Texture Unit 0
         glUniform1i(TextureID, 0);
-        // Send our transformation to the currently bound shader,in the "MVP" uniform
-        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+
+
         // Draw the triangle !
-//        glBindBuffer(GL_ARRAY_BUFFER, VBO);
 //        glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
-
-
-
-
 
         // Swap buffers-- draw new screen
         glfwSwapBuffers(window);
