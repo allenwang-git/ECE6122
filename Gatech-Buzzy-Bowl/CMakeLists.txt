@@ -25,6 +25,8 @@ add_executable(gtbb
         ${sources}
         common/shader.cpp
         common/texture.cpp
+        common/objloader.cpp
+        common/vboindexer.cpp
 
 
         )

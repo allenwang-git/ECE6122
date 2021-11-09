@@ -25,20 +25,13 @@ sudo apt-get install dos2unix git wget xorg-dev
     * GLEW-2.1.0 (http://glew.sourceforge.net/index.html)
     * GLFW-3.3.4 (https://www.glfw.org/download.html)
 
-## Build
+## Build & Run
 
 Under *Gatech-Buzzy-Bowl* folder:
 
 ```
-mkdir build && cd build
-cmake ..
-make -j4
+sh make_run.sh
 ```
-
-## Run
-
-Under *build* directory:
-`./gtbb`
 
 ## Reference
 

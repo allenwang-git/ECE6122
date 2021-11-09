@@ -4,8 +4,8 @@
 in vec2 textureCoord;
 
 // Ouput data
-//out vec3 color;
-out vec4 textureColor;
+out vec3 color;
+//out vec4 textureColor;
 vec4 bgr;
 // sampler
 uniform sampler2D ffTexture;
@@ -13,7 +13,7 @@ uniform sampler2D ffTexture;
 void main()
 {
 	// Output color = green
-	//color = vec3(0,1,0);
-    bgr = texture(ffTexture, textureCoord);
-    textureColor = bgr.xzyw;
+	color = vec3(0,1,0);
+    //bgr = texture(ffTexture, textureCoord);
+    //textureColor = bgr.xzyw;
 }

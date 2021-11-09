@@ -136,7 +136,8 @@ GLuint loadDDS(const char * imagepath){
 		printf("%s could not be opened. Are you in the right directory ? Don't forget to read the FAQ !\n", imagepath); getchar(); 
 		return 0;
 	}
-   
+    else
+        printf("Reading image %s\n", imagepath);
 	/* verify the type of file */ 
 	char filecode[4]; 
 	fread(filecode, 1, 4, fp); 
@@ -210,8 +211,8 @@ GLuint loadDDS(const char * imagepath){
 
 	} 
 
-	free(buffer); 
-
+	free(buffer);
+    printf("finish loading dds\n");
 	return textureID;
 
 

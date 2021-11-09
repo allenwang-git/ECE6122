@@ -18,9 +18,10 @@ make
 
 ### Build on pace-ice (GCC-10.1)
 I have provide the executable file in this folder, if you want to build again, please follow the guide:
-(**Following steps can not be run in VNC, only vpn command line can build without errors**)
+(**Following steps can be run in VNC, or ssh command line**)
 ```
 cd lab4
+source ./mesaSetup.sh
 sh ./gccBuild.sh
 ```
 
