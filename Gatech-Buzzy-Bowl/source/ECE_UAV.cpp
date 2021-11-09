@@ -23,6 +23,7 @@ ECE_UAV::ECE_UAV(const float px, const float py)
     position.setZero();
     position[0] = px;
     position[1] = py;
+    position[2] = 0.6f;
     velocity.setZero();
     acceleration.setZero();
     acceleration[2] = g;

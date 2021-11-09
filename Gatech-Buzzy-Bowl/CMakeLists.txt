@@ -27,7 +27,7 @@ add_executable(gtbb
         common/texture.cpp
         common/objloader.cpp
         common/vboindexer.cpp
-
+        common/controls.cpp
 
         )
 target_link_libraries(gtbb ${ALL_LIBS})
