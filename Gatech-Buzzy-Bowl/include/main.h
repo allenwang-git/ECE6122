@@ -4,6 +4,7 @@
 
 #ifndef GATECH_BUZZY_BOWL_MAIN_H
 #define GATECH_BUZZY_BOWL_MAIN_H
+#pragma once
 #include "../include/ECE_UAV.h"
 
 #include "../common/shader.hpp"
@@ -14,26 +15,27 @@
 
 
 // Screen
-#define SCREEN_LEN 400
-#define SCREEN_WID 400
+#define SCREEN_LEN 900
+#define SCREEN_WID 900
 
 // UAV Position
 #define Y0 0.0
 #define Y1 25.0
+#define Y2 50.0
 #define X0 0.0
 #define X1 25.0
-#define X2 50.0
+//#define X2 50.0
 
-// constant number
-#define PI 3.1415926
 
 // Camera position
-#define CAM_Z 90
-#define CAM_Y -100
+#define CAM_Z 70
+#define CAM_Y -50
 #define CAM_X 0
 
 // draw or not
 #define DRAW_UAV
 #define DRAW_FF
 #define DRAW_SPHERE
+
+int oglThreadFunc();//vector<Vector3f*> uavPosition);
 #endif //GATECH_BUZZY_BOWL_MAIN_H

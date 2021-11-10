@@ -28,12 +28,14 @@ Description:
 using namespace std;
 using namespace glm;
 GLFWwindow* window;
-vector<Vector3f> UAVs;
+vector<Vector3f*> UAVs;
 
 int main()
 {
+    thread ogl(oglThreadFunc);
+
     //  create UAV
-    ECE_UAV uav_1(X0,Y0);
+/*    ECE_UAV uav_1(X0,Y0);
     ECE_UAV uav_2(X0,Y1);
     ECE_UAV uav_3(X0,-Y1);
 
@@ -51,7 +53,24 @@ int main()
 
     ECE_UAV uav_13(-X2,Y0);
     ECE_UAV uav_14(-X2,Y1);
-    ECE_UAV uav_15(-X2,-Y1);
+    ECE_UAV uav_15(-X2,-Y1);*/
+    ECE_UAV uav_1(X0, Y0);
+    ECE_UAV uav_2(X0, Y1);
+    ECE_UAV uav_3(X0, -Y1);
+    ECE_UAV uav_4(X0, Y2);
+    ECE_UAV uav_5(X0, -Y2);
+
+    ECE_UAV uav_6(X1, Y0);
+    ECE_UAV uav_7(X1, Y1);
+    ECE_UAV uav_8(X1, -Y1);
+    ECE_UAV uav_9(X1, Y2);
+    ECE_UAV uav_10(X1, -Y2);
+
+    ECE_UAV uav_11(-X1, Y0);
+    ECE_UAV uav_12(-X1, Y1);
+    ECE_UAV uav_13(-X1, -Y1);
+    ECE_UAV uav_14(-X1, Y2);
+    ECE_UAV uav_15(-X1, -Y2);
 
     UAVs.push_back(uav_1.getPosition());
     UAVs.push_back(uav_2.getPosition());
@@ -68,6 +87,23 @@ int main()
     UAVs.push_back(uav_13.getPosition());
     UAVs.push_back(uav_14.getPosition());
     UAVs.push_back(uav_15.getPosition());
+
+    uav_1.start();
+    uav_2.start();
+    uav_3.start();
+    uav_4.start();
+    uav_5.start();
+    uav_6.start();
+    uav_7.start();
+    uav_8.start();
+    uav_9.start();
+    uav_10.start();
+    uav_11.start();
+    uav_12.start();
+    uav_13.start();
+    uav_14.start();
+    uav_15.start();
+
     uav_1.join();
     uav_2.join();
     uav_3.join();
@@ -84,6 +120,12 @@ int main()
     uav_14.join();
     uav_15.join();
 
+    ogl.join();
+
+    return -1;
+}
+int oglThreadFunc()//vector<Vector3f*> uavPosition)
+{
     /* ******************************************************************************
     * Initialization
     * *******************************************************************************/
@@ -138,7 +180,7 @@ int main()
     // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
     // Cull triangles which normal is not towards the camera
-    glEnable(GL_CULL_FACE);
+//    glEnable(GL_CULL_FACE);
 
     // create and bind VAO
     GLuint vertexArray;
@@ -215,6 +257,12 @@ int main()
                 1.f,  0.5f, 0.0f,    // right top
                 -1.f, 0.5f, 0.0f,    // left top
                 -1.f,-0.5f, 0.0f     // left bottom
+//                -0.5f,-1.f, 0.0f,    // left bottom
+//                -0.5f,1.f,  0.0f,    // right bottom
+//                0.5f,1.f,   0.0f,    // right top
+//                0.5f,1.f,   0.0f,    // right top
+//                0.5f,-1.f,  0.0f,    // left top
+//                -0.5f,-1.f, 0.0f     // left bottom
             };
     static const GLfloat ff_uv_buffer_data[] =
             {   // UV Coordinate
@@ -294,8 +342,18 @@ int main()
     /* **********************************************************************************
      * Draw something
      * ************************************************************************************/
+//    double lastTime = glfwGetTime();
     do//render loop
     {
+//        double currentTime = glfwGetTime();
+////        float deltaTime = (float);
+//        if(abs(round((currentTime - lastTime)*100)-30.f)<15.f)
+//        {
+//
+//            cout<<currentTime-lastTime<<endl;
+//            lastTime = currentTime;
+//        }
+
         // Dark blue background
         glClearColor(0.9f, 0.9f, 0.9f, 0.0f);
         // clear screen before a new render
@@ -321,11 +379,11 @@ int main()
             glUniform1i(uavTexture, 0);
 
             glm::vec3 gOrientation(PI/2, 0.f, 0.f);
-            for (int i = 0; i < 15; ++i)
+            for (auto u:UAVs)
             {
-
+//                    cout<<"pos:"<<(*u)[1]<<" "<<(*u)[0]<<" "<<(*u)[2]<<endl;
 //                    glm::vec3 gPosition(-50.f + j*25.f, -25.f + i*25.f, 2.f);
-                    glm::vec3 gPosition(UAVs[i][0],UAVs[i][1],UAVs[i][2]);
+                    glm::vec3 gPosition((*u)[1],(*u)[0],(*u)[2]);
                     // Build the model matrix
                     glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.f), gOrientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
                     glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1.0), gPosition); // A bit to the left
@@ -435,10 +493,8 @@ int main()
                     (void*)(0*sizeof(float))
             );
 
-//            glBindVertexArray(VAO);
             // Draw the triangle !
             glDrawArrays(GL_TRIANGLES, 0, 6);
-//            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
         }
@@ -479,7 +535,7 @@ int main()
         glfwSwapBuffers(window);
         // check events(key,mouse,window)
         glfwPollEvents();
-
+        this_thread::sleep_for(chrono::milliseconds(30));
     } // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
            glfwWindowShouldClose(window) == 0);
