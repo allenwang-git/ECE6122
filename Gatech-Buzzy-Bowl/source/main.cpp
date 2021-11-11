@@ -54,71 +54,71 @@ int main()
     ECE_UAV uav_13(-X2,Y0);
     ECE_UAV uav_14(-X2,Y1);
     ECE_UAV uav_15(-X2,-Y1);*/
-    ECE_UAV uav_1(X0, Y0);
+//    ECE_UAV uav_1(X0, Y0);
     ECE_UAV uav_2(X0, Y1);
-    ECE_UAV uav_3(X0, -Y1);
-    ECE_UAV uav_4(X0, Y2);
-    ECE_UAV uav_5(X0, -Y2);
+//    ECE_UAV uav_3(X0, -Y1);
+//    ECE_UAV uav_4(X0, Y2);
+//    ECE_UAV uav_5(X0, -Y2);
+//
+//    ECE_UAV uav_6(X1, Y0);
+//    ECE_UAV uav_7(X1, Y1);
+//    ECE_UAV uav_8(X1, -Y1);
+//    ECE_UAV uav_9(X1, Y2);
+//    ECE_UAV uav_10(X1, -Y2);
+//
+//    ECE_UAV uav_11(-X1, Y0);
+//    ECE_UAV uav_12(-X1, Y1);
+//    ECE_UAV uav_13(-X1, -Y1);
+//    ECE_UAV uav_14(-X1, Y2);
+//    ECE_UAV uav_15(-X1, -Y2);
 
-    ECE_UAV uav_6(X1, Y0);
-    ECE_UAV uav_7(X1, Y1);
-    ECE_UAV uav_8(X1, -Y1);
-    ECE_UAV uav_9(X1, Y2);
-    ECE_UAV uav_10(X1, -Y2);
-
-    ECE_UAV uav_11(-X1, Y0);
-    ECE_UAV uav_12(-X1, Y1);
-    ECE_UAV uav_13(-X1, -Y1);
-    ECE_UAV uav_14(-X1, Y2);
-    ECE_UAV uav_15(-X1, -Y2);
-
-    UAVs.push_back(uav_1.getPosition());
+//    UAVs.push_back(uav_1.getPosition());
     UAVs.push_back(uav_2.getPosition());
-    UAVs.push_back(uav_3.getPosition());
-    UAVs.push_back(uav_4.getPosition());
-    UAVs.push_back(uav_5.getPosition());
-    UAVs.push_back(uav_6.getPosition());
-    UAVs.push_back(uav_7.getPosition());
-    UAVs.push_back(uav_8.getPosition());
-    UAVs.push_back(uav_9.getPosition());
-    UAVs.push_back(uav_10.getPosition());
-    UAVs.push_back(uav_11.getPosition());
-    UAVs.push_back(uav_12.getPosition());
-    UAVs.push_back(uav_13.getPosition());
-    UAVs.push_back(uav_14.getPosition());
-    UAVs.push_back(uav_15.getPosition());
+//    UAVs.push_back(uav_3.getPosition());
+//    UAVs.push_back(uav_4.getPosition());
+//    UAVs.push_back(uav_5.getPosition());
+//    UAVs.push_back(uav_6.getPosition());
+//    UAVs.push_back(uav_7.getPosition());
+//    UAVs.push_back(uav_8.getPosition());
+//    UAVs.push_back(uav_9.getPosition());
+//    UAVs.push_back(uav_10.getPosition());
+//    UAVs.push_back(uav_11.getPosition());
+//    UAVs.push_back(uav_12.getPosition());
+//    UAVs.push_back(uav_13.getPosition());
+//    UAVs.push_back(uav_14.getPosition());
+//    UAVs.push_back(uav_15.getPosition());
 
-    uav_1.start();
+//    uav_1.start();
     uav_2.start();
-    uav_3.start();
-    uav_4.start();
-    uav_5.start();
-    uav_6.start();
-    uav_7.start();
-    uav_8.start();
-    uav_9.start();
-    uav_10.start();
-    uav_11.start();
-    uav_12.start();
-    uav_13.start();
-    uav_14.start();
-    uav_15.start();
-
-    uav_1.join();
+//    uav_3.start();
+//    uav_4.start();
+//    uav_5.start();
+//    uav_6.start();
+//    uav_7.start();
+//    uav_8.start();
+//    uav_9.start();
+//    uav_10.start();
+//    uav_11.start();
+//    uav_12.start();
+//    uav_13.start();
+//    uav_14.start();
+//    uav_15.start();
+//
+//    uav_1.join();
     uav_2.join();
-    uav_3.join();
-    uav_4.join();
-    uav_5.join();
-    uav_6.join();
-    uav_7.join();
-    uav_8.join();
-    uav_9.join();
-    uav_10.join();
-    uav_11.join();
-    uav_12.join();
-    uav_13.join();
-    uav_14.join();
-    uav_15.join();
+//    uav_3.join();
+//    uav_4.join();
+//    uav_5.join();
+//    uav_6.join();
+//    uav_7.join();
+//    uav_8.join();
+//    uav_9.join();
+//    uav_10.join();
+//    uav_11.join();
+//    uav_12.join();
+//    uav_13.join();
+//    uav_14.join();
+//    uav_15.join();
 
     ogl.join();
 
@@ -508,7 +508,7 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
             glUseProgram(shaderProgramSPH);
             // Model matrix
             glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 50.f));
-            glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 10.0f));
+            glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f));
             glm::mat4 ModelMatrix = TranslationMatrix * ScalingMatrix;
             // Our ModelViewProjection : multiplication of our 3 matrices
             glm::mat4 SPH_MVP = ProjectionMatrix * ViewMatrix * ModelMatrix; // Remember, matrix multiplication is the other way around

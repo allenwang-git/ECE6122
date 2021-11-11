@@ -16,7 +16,7 @@
 
 // Screen
 #define SCREEN_LEN 900
-#define SCREEN_WID 900
+#define SCREEN_WID 500
 
 // UAV Position
 #define Y0 0.0
@@ -28,7 +28,7 @@
 
 
 // Camera position
-#define CAM_Z 70
+#define CAM_Z 80
 #define CAM_Y -50
 #define CAM_X 0
 
