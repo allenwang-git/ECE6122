@@ -1,0 +1,58 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+int main() {
+    size_t N = 256;
+    int iteration = 10000;
+    double h[256][256];//n+1=1000
+    //initialize
+    for (int j = 0; j < N; ++j) {
+        h[N-1][j] = 20.;//BOTTOM
+        h[j][0] = 20.; //left
+        h[j][N-1] = 20.; //right
+        if (j<(0.3*N) || j>=(0.7*N))//top
+            h[0][j] = 20.;
+        else
+            h[0][j] = 100.;
+    }
+    for (int i = 1; i < N-1; ++i) {
+        for (int m = 1; m < N-1; ++m) {
+            h[i][m] = 0.;
+        }
+    }
+//    double g[1000][1000];
+    for (int iter = 0; iter < iteration; ++iter) {
+
+        for (int i = 1; i < N-1; ++i) {
+            for (int j = 1; j < N-1; ++j) {
+                h[i][j] = 0.25 * (h[i-1][j] + h[i+1][j] + h[i][j-1] + h[i][j+1]);
+            }
+        }
+//        for (int i = 1; i < N-1; ++i) {
+//            for (int j = 1; j < N-1; ++j) {
+//                h[i][j] = g[i][j];
+//            }
+//        }
+
+    }
+    //   Create a file for output result
+    fstream outputFile("ProblemOne.txt", ios::out | ios::trunc);
+    if (outputFile.good())
+    {
+        for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j) {
+                outputFile <<h[i][j] <<",";
+            }
+            outputFile<<endl;
+        }
+
+    }
+    else
+    {
+        cout << "[ECE6122-Lab2-1] Can not open output file.\n";
+    }
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}
