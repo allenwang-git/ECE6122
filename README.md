@@ -16,7 +16,7 @@ SFML 2D Game
 SFML TCP Socket
 
 ## lab5
-
+GPU CUDA 
 
 ## lab6
 
