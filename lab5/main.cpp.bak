@@ -38,7 +38,7 @@ int main() {
 
     }
     //   Create a file for output result
-    fstream outputFile("ProblemOne.txt", ios::out | ios::trunc);
+    fstream outputFile("finalTemperatures.csv", ios::out | ios::trunc);
     if (outputFile.good())
     {
         for (int i = 0; i < N; ++i) {
@@ -51,7 +51,7 @@ int main() {
     }
     else
     {
-        cout << "[ECE6122-Lab2-1] Can not open output file.\n";
+        cout << "[ECE6122-Lab5] Can not open output file.\n";
     }
     std::cout << "Hello, World!" << std::endl;
     return 0;
