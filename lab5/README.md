@@ -8,6 +8,7 @@
 
 ## Build
 ```
+source mesaSetup.sh
 nvcc main.cu -o lab5 -stdc++=11
 ```
 
