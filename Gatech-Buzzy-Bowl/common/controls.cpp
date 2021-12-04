@@ -28,7 +28,7 @@ float horizontalAngle = PI;
 // Initial vertical angle : none
 float verticalAngle = PI/3;
 // Initial Field of View
-float initialFoV = 50.0f;
+float initialFoV = 60.0f;
 glm::vec3 direction(0.f,0.9f,-0.4f);
 float speed = 5.0f; // 3 units / second
 float mouseSpeed = 0.0002f;

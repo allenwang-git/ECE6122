@@ -4,5 +4,6 @@ mkdir build
 cd build
 cmake ..
 make -j8
-cp gtbb ../source/ && cd ../source
+cp gtbb ../source/
+cd ../source
 ./gtbb

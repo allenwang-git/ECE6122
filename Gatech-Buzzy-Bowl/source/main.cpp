@@ -20,7 +20,7 @@ Description:
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL/glew.h>
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "../include/main.h"
@@ -28,101 +28,135 @@ Description:
 using namespace std;
 using namespace glm;
 GLFWwindow* window;
-vector<Vector3f*> UAVs;
+vector<Vector3d*> UAVs;
 
 int main()
 {
-    thread ogl(oglThreadFunc);
+    thread oglThread(oglThreadFunc);
 
     //  create UAV
-/*    ECE_UAV uav_1(X0,Y0);
-    ECE_UAV uav_2(X0,Y1);
-    ECE_UAV uav_3(X0,-Y1);
-
-    ECE_UAV uav_4(X1,Y0);
-    ECE_UAV uav_5(X1,-Y1);
-    ECE_UAV uav_6(X1,Y1);
-
-    ECE_UAV uav_7(X2,Y1);
-    ECE_UAV uav_8(X2,-Y1);
-    ECE_UAV uav_9(X2,Y0);
-
-    ECE_UAV uav_10(-X1,-Y1);
-    ECE_UAV uav_11(-X1,Y0);
-    ECE_UAV uav_12(-X1,Y1);
-
-    ECE_UAV uav_13(-X2,Y0);
-    ECE_UAV uav_14(-X2,Y1);
-    ECE_UAV uav_15(-X2,-Y1);*/
-//    ECE_UAV uav_1(X0, Y0);
+    ECE_UAV uav_1(X0, Y0);
     ECE_UAV uav_2(X0, Y1);
-//    ECE_UAV uav_3(X0, -Y1);
-//    ECE_UAV uav_4(X0, Y2);
-//    ECE_UAV uav_5(X0, -Y2);
-//
-//    ECE_UAV uav_6(X1, Y0);
-//    ECE_UAV uav_7(X1, Y1);
-//    ECE_UAV uav_8(X1, -Y1);
-//    ECE_UAV uav_9(X1, Y2);
-//    ECE_UAV uav_10(X1, -Y2);
-//
-//    ECE_UAV uav_11(-X1, Y0);
-//    ECE_UAV uav_12(-X1, Y1);
-//    ECE_UAV uav_13(-X1, -Y1);
-//    ECE_UAV uav_14(-X1, Y2);
-//    ECE_UAV uav_15(-X1, -Y2);
+    ECE_UAV uav_3(X0, -Y1);
+    ECE_UAV uav_4(X0, Y2);
+    ECE_UAV uav_5(X0, -Y2);
 
-//    UAVs.push_back(uav_1.getPosition());
+    ECE_UAV uav_6(X1, Y0);
+    ECE_UAV uav_7(X1, Y1);
+    ECE_UAV uav_8(X1, -Y1);
+    ECE_UAV uav_9(X1, Y2);
+    ECE_UAV uav_10(X1, -Y2);
+
+    ECE_UAV uav_11(-X1, Y0);
+    ECE_UAV uav_12(-X1, Y1);
+    ECE_UAV uav_13(-X1, -Y1);
+    ECE_UAV uav_14(-X1, Y2);
+    ECE_UAV uav_15(-X1, -Y2);
+
+    UAVs.push_back(uav_1.getPosition());
     UAVs.push_back(uav_2.getPosition());
-//    UAVs.push_back(uav_3.getPosition());
-//    UAVs.push_back(uav_4.getPosition());
-//    UAVs.push_back(uav_5.getPosition());
-//    UAVs.push_back(uav_6.getPosition());
-//    UAVs.push_back(uav_7.getPosition());
-//    UAVs.push_back(uav_8.getPosition());
-//    UAVs.push_back(uav_9.getPosition());
-//    UAVs.push_back(uav_10.getPosition());
-//    UAVs.push_back(uav_11.getPosition());
-//    UAVs.push_back(uav_12.getPosition());
-//    UAVs.push_back(uav_13.getPosition());
-//    UAVs.push_back(uav_14.getPosition());
-//    UAVs.push_back(uav_15.getPosition());
+    UAVs.push_back(uav_3.getPosition());
+    UAVs.push_back(uav_4.getPosition());
+    UAVs.push_back(uav_5.getPosition());
 
-//    uav_1.start();
+    UAVs.push_back(uav_6.getPosition());
+    UAVs.push_back(uav_7.getPosition());
+    UAVs.push_back(uav_8.getPosition());
+    UAVs.push_back(uav_9.getPosition());
+    UAVs.push_back(uav_10.getPosition());
+    UAVs.push_back(uav_11.getPosition());
+    UAVs.push_back(uav_12.getPosition());
+    UAVs.push_back(uav_13.getPosition());
+    UAVs.push_back(uav_14.getPosition());
+    UAVs.push_back(uav_15.getPosition());
+
+    uav_1.start();
     uav_2.start();
-//    uav_3.start();
-//    uav_4.start();
-//    uav_5.start();
-//    uav_6.start();
-//    uav_7.start();
-//    uav_8.start();
-//    uav_9.start();
-//    uav_10.start();
-//    uav_11.start();
-//    uav_12.start();
-//    uav_13.start();
-//    uav_14.start();
-//    uav_15.start();
-//
-//    uav_1.join();
+    uav_3.start();
+    uav_4.start();
+    uav_5.start();
+    uav_6.start();
+    uav_7.start();
+    uav_8.start();
+    uav_9.start();
+    uav_10.start();
+    uav_11.start();
+    uav_12.start();
+    uav_13.start();
+    uav_14.start();
+    uav_15.start();
+
+    // handle the uav collision
+    thread colThread(collisionThreadFunc);
+
+
+    uav_1.join();
     uav_2.join();
-//    uav_3.join();
-//    uav_4.join();
-//    uav_5.join();
-//    uav_6.join();
-//    uav_7.join();
-//    uav_8.join();
-//    uav_9.join();
-//    uav_10.join();
-//    uav_11.join();
-//    uav_12.join();
-//    uav_13.join();
-//    uav_14.join();
-//    uav_15.join();
+    uav_3.join();
+    uav_4.join();
+    uav_5.join();
+    uav_6.join();
+    uav_7.join();
+    uav_8.join();
+    uav_9.join();
+    uav_10.join();
+    uav_11.join();
+    uav_12.join();
+    uav_13.join();
+    uav_14.join();
+    uav_15.join();
 
-    ogl.join();
-
+    oglThread.join();
+    colThread.join();
     return -1;
+}
+bool checkUavCollision(Vector3d posA, Vector3d posB){
+    double distance = 0.;
+    for (int i = 0; i < 3; ++i) {
+        distance += ((posA[i] - posB[i]) * (posA[i] - posB[i]));
+    }
+    if(distance>0.) {
+        distance = sqrt(distance);
+    }
+
+    if(distance<=0.2*2)
+    {
+        return true;
+    }else{
+        return false;
+    }
+
+}
+
+void collisionThreadFunc(){
+    unsigned long timer =0;
+    set<int> collisionSet;
+    do
+    {
+        timer++;
+        if (timer%500==0)
+            collisionSet.clear();
+        for (int i = 0; i < 15; ++i)
+        {
+            for (int j = 0; j < 15; ++j)
+            {
+                if(i!=j && collisionSet.find(i)==collisionSet.end() && collisionSet.find(j)==collisionSet.end()
+                   && checkUavCollision(*UAVs[i],*UAVs[j]))
+                {
+                    cout<<i<<" "<<j<<"collide"<<endl;
+                    Vector3d posTmp = *UAVs[i];
+                    *UAVs[i] = *UAVs[j];
+                    *UAVs[j] = posTmp;
+                    collisionSet.insert(i);
+                    collisionSet.insert(j);
+                }
+            }
+        }
+        // set the update rate
+        this_thread::sleep_for(chrono::milliseconds(30));
+    }
+    while(1);
+
 }
 int oglThreadFunc()//vector<Vector3f*> uavPosition)
 {
@@ -203,6 +237,8 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
     // Load the texture
     GLuint texture2 = loadBMP_custom("../img.bmp");
     GLuint uavTexture  = glGetUniformLocation(shaderProgramUAV, "UAVTexture");
+    GLuint uavColorFactor = glGetUniformLocation(shaderProgramUAV, "UAVColorFactor");
+
     // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -321,6 +357,8 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
     /* **************************************************************************
      * Shaders and VAO, VBP, EBO of SPHERE
      * **************************************************************************/
+//    glEnable(GL_BLEND);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Create and compile our GLSL program from the shaders
     GLuint shaderProgramSPH = LoadShaders( "SphereVertexShader.vertexshader",
                                            "SphereFragmentShader.fragmentshader" );
@@ -343,6 +381,7 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
      * Draw something
      * ************************************************************************************/
 //    double lastTime = glfwGetTime();
+
     do//render loop
     {
 //        double currentTime = glfwGetTime();
@@ -354,8 +393,8 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
 //            lastTime = currentTime;
 //        }
 
-        // Dark blue background
-        glClearColor(0.9f, 0.9f, 0.9f, 0.0f);
+        // Dark background
+        glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
         // clear screen before a new render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         /* **********************************************************************************
@@ -376,7 +415,10 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture2);
             // Set our "myTextureSampler" sampler to use Texture Unit 0
+            float timeValue = glfwGetTime();
+            float colorFactor =  0.5 * sin(timeValue) + 1;//0.5 -1.5
             glUniform1i(uavTexture, 0);
+            glUniform1f(uavColorFactor,colorFactor);
 
             glm::vec3 gOrientation(PI/2, 0.f, 0.f);
             for (auto u:UAVs)
@@ -504,11 +546,15 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
          * Draw Sphere
          * ************************************************************************************/
         {
+            // Enable blending
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
             // Use  shader
             glUseProgram(shaderProgramSPH);
             // Model matrix
-            glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 50.f));
-            glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f));
+            glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 20.f));
+            glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(10.f, 10.f, 10.f));
             glm::mat4 ModelMatrix = TranslationMatrix * ScalingMatrix;
             // Our ModelViewProjection : multiplication of our 3 matrices
             glm::mat4 SPH_MVP = ProjectionMatrix * ViewMatrix * ModelMatrix; // Remember, matrix multiplication is the other way around
@@ -529,6 +575,7 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
             // Draw the triangle !
             glDrawArrays(GL_TRIANGLES, 0, vSPH.size());
             glDisableVertexAttribArray(0);
+            glDisable(GL_BLEND);
         }
 #endif
         // Swap buffers-- draw new screen

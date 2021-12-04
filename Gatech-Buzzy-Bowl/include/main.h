@@ -12,7 +12,7 @@
 #include "../common/objloader.hpp"
 #include "../common/vboindexer.hpp"
 #include "../common/controls.hpp"
-
+#include <set>
 
 // Screen
 #define SCREEN_LEN 900
@@ -28,8 +28,8 @@
 
 
 // Camera position
-#define CAM_Z 80
-#define CAM_Y -50
+#define CAM_Z 60
+#define CAM_Y -70
 #define CAM_X 0
 
 // draw or not
@@ -37,5 +37,7 @@
 #define DRAW_FF
 #define DRAW_SPHERE
 
-int oglThreadFunc();//vector<Vector3f*> uavPosition);
+void collisionThreadFunc();
+int oglThreadFunc();
+
 #endif //GATECH_BUZZY_BOWL_MAIN_H
