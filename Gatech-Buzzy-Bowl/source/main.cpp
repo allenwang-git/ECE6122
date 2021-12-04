@@ -4,16 +4,10 @@ Class: ECE 6122
 Last Date Modified: 11/25/2021
 
 Description:
- This program use OpenGL to create a 3D game called "Gatech Buzzy Bowl",
- In this game, the user launches buzzy across the field attempting
- to hit the evil mascots from other universities, while avoiding
- the cute woodland creatures.
-
- Press Enter to start/restart the game, press Space to modify the buzzy's
- initial velocity and press up/down to modify buzzy's initial direction.
- When releasing the Space, the buzzy will be launched.
-
- If user win or lose the game, the page will reset to the initial page.
+ This program use OpenGL to create a 3D multi-thread simulation called "Gatech Buzzy Bowl".
+ 15 UAVs in the playground will be launched and move around a 10m sphere in the sky for 60 seconds.
+ Once they reach the sphere surface, they will begin to move randomly on the surface and
+ all UAVs will collide with each other if they are too close to each other.
 */
 
 #include <iostream>
@@ -27,11 +21,15 @@ Description:
 
 using namespace std;
 using namespace glm;
+using namespace chrono;
+
 GLFWwindow* window;
 vector<Vector3d*> UAVs;
+chrono::high_resolution_clock::time_point allReachSphereTimestamp;
 
 int main()
 {
+    // create the opengl thread
     thread oglThread(oglThreadFunc);
 
     //  create UAV
@@ -40,25 +38,23 @@ int main()
     ECE_UAV uav_3(X0, -Y1);
     ECE_UAV uav_4(X0, Y2);
     ECE_UAV uav_5(X0, -Y2);
-
     ECE_UAV uav_6(X1, Y0);
     ECE_UAV uav_7(X1, Y1);
     ECE_UAV uav_8(X1, -Y1);
     ECE_UAV uav_9(X1, Y2);
     ECE_UAV uav_10(X1, -Y2);
-
     ECE_UAV uav_11(-X1, Y0);
     ECE_UAV uav_12(-X1, Y1);
     ECE_UAV uav_13(-X1, -Y1);
     ECE_UAV uav_14(-X1, Y2);
     ECE_UAV uav_15(-X1, -Y2);
 
+    // add uav position
     UAVs.push_back(uav_1.getPosition());
     UAVs.push_back(uav_2.getPosition());
     UAVs.push_back(uav_3.getPosition());
     UAVs.push_back(uav_4.getPosition());
     UAVs.push_back(uav_5.getPosition());
-
     UAVs.push_back(uav_6.getPosition());
     UAVs.push_back(uav_7.getPosition());
     UAVs.push_back(uav_8.getPosition());
@@ -70,7 +66,7 @@ int main()
     UAVs.push_back(uav_14.getPosition());
     UAVs.push_back(uav_15.getPosition());
 
-    uav_1.start();
+/*    uav_1.start();
     uav_2.start();
     uav_3.start();
     uav_4.start();
@@ -84,13 +80,45 @@ int main()
     uav_12.start();
     uav_13.start();
     uav_14.start();
-    uav_15.start();
+    uav_15.start();*/
 
     // handle the uav collision
     thread colThread(collisionThreadFunc);
+    bool timerFlag = false;
+    while(true)
+    {
+        // set the start timestamp and turn on the timer
+        if(!timerFlag && uav_1.getInitSphereFlag() && uav_2.getInitSphereFlag() && uav_3.getInitSphereFlag() &&
+                uav_4.getInitSphereFlag() && uav_5.getInitSphereFlag() && uav_6.getInitSphereFlag() &&
+                uav_7.getInitSphereFlag() && uav_8.getInitSphereFlag() && uav_9.getInitSphereFlag() &&
+                uav_10.getInitSphereFlag() && uav_11.getInitSphereFlag() && uav_12.getInitSphereFlag() &&
+                uav_13.getInitSphereFlag() && uav_14.getInitSphereFlag() && uav_15.getInitSphereFlag())
+        {
+            timerFlag = true;
+            allReachSphereTimestamp = high_resolution_clock::now();
 
-
-    uav_1.join();
+        }
+        // check the timer
+        double timeTillNow = duration_cast<duration<double>>(high_resolution_clock::now() - allReachSphereTimestamp).count();
+        if(timerFlag && timeTillNow >= RUN_TIME && checkAllIn())
+        {
+            cout<< "End time "<<timeTillNow<<endl;
+            uav_1.setEndFlag(); uav_2.setEndFlag(); uav_3.setEndFlag();
+            uav_4.setEndFlag(); uav_5.setEndFlag(); uav_6.setEndFlag();
+            uav_7.setEndFlag(); uav_8.setEndFlag(); uav_9.setEndFlag();
+            uav_10.setEndFlag(); uav_11.setEndFlag(); uav_12.setEndFlag();
+            uav_13.setEndFlag(); uav_14.setEndFlag(); uav_15.setEndFlag();
+            endThreadFlag = true;
+            break;
+        }
+        else if(timerFlag)
+        {
+            cout<<"current time "<<timeTillNow<<endl;
+        }
+        // set the update rate
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+/*    uav_1.join();
     uav_2.join();
     uav_3.join();
     uav_4.join();
@@ -104,12 +132,18 @@ int main()
     uav_12.join();
     uav_13.join();
     uav_14.join();
-    uav_15.join();
+    uav_15.join();*/
 
     oglThread.join();
     colThread.join();
+
     return -1;
+
 }
+/*
+ * Check if the uav collide with others
+ * @return true if a uav collides with others
+ * */
 bool checkUavCollision(Vector3d posA, Vector3d posB){
     double distance = 0.;
     for (int i = 0; i < 3; ++i) {
@@ -128,7 +162,33 @@ bool checkUavCollision(Vector3d posA, Vector3d posB){
 
 }
 
-void collisionThreadFunc(){
+/*
+ * Check if all uavs have gone into the sphere
+ * @return true if all uavs are in the sphere
+ * */
+bool checkAllIn()
+{
+    const Vector3d sphereOrigin = {0., 0., 50.};
+    for (auto u:UAVs)
+    {
+        double distance = 0.;
+        double bias = 0.5;
+        for (int i = 0; i < 3; ++i) {
+            distance += (((*u)[i] - sphereOrigin[i]) * ((*u)[i] - sphereOrigin[i]));
+        }
+        if (distance > 0.)
+            distance = sqrt(distance);
+        if (distance>10.0+bias)
+            return false;
+    }
+    return true;
+}
+/*
+ * The thread function to handle the collision between uavs
+ *
+ * */
+void collisionThreadFunc()
+{
     unsigned long timer =0;
     set<int> collisionSet;
     do
@@ -155,10 +215,13 @@ void collisionThreadFunc(){
         // set the update rate
         this_thread::sleep_for(chrono::milliseconds(30));
     }
-    while(1);
-
+    while(!endThreadFlag);
+    return;
 }
-int oglThreadFunc()//vector<Vector3f*> uavPosition)
+/*
+ * The thread function to draw the playground and uavs and update uavs' position
+ * */
+int oglThreadFunc()
 {
     /* ******************************************************************************
     * Initialization
@@ -179,7 +242,7 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Open a window and create its OpenGL context
-    window = glfwCreateWindow(SCREEN_LEN, SCREEN_WID, "Playground", NULL, NULL);
+    window = glfwCreateWindow(SCREEN_LEN, SCREEN_WID, "Gatech Bowl", NULL, NULL);
     if (window == NULL)
     {
         fprintf(stderr,
@@ -213,8 +276,6 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
 
     // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
-    // Cull triangles which normal is not towards the camera
-//    glEnable(GL_CULL_FACE);
 
     // create and bind VAO
     GLuint vertexArray;
@@ -227,12 +288,10 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
     // Create and compile our GLSL program from the shaders
     GLuint shaderProgramUAV = LoadShaders( "uavVertexShader.vertexshader",
                                            "uavFragmentShader.fragmentshader" );
-
     // Load our .obj file
     std::vector<glm::vec3> vUAV;
     std::vector<glm::vec2> vtUAV;
-    std::vector<glm::vec3> vnUAV; // Won't be used at the moment.
-//    bool res = loadOBJ("../OBJ files/shipA_OBJ/shipA_OBJ.obj", vUAV, vtUAV, vnUAV);
+    std::vector<glm::vec3> vnUAV; // Won't be used at the moment
     loadOBJ("../OBJ files/shipA_OBJ/ship2.obj", vUAV, vtUAV, vnUAV);
     // Load the texture
     GLuint texture2 = loadBMP_custom("../img.bmp");
@@ -246,12 +305,6 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-//    std::vector<unsigned short> indices;
-//    std::vector<glm::vec3> indexed_vertices;
-//    std::vector<glm::vec2> indexed_uvs;
-//    std::vector<glm::vec3> indexed_normals;
-//    indexVBO(vUAV, vtUAV, vnUAV, indices, indexed_vertices, indexed_uvs, indexed_normals);
-
     // Load it into a VBO
     GLuint vertexBuffer;
     glGenBuffers(1, &vertexBuffer);
@@ -262,17 +315,6 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
     glGenBuffers(1, &uvBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
     glBufferData(GL_ARRAY_BUFFER, vtUAV.size() * sizeof(glm::vec3), &vtUAV[0], GL_STATIC_DRAW);
-
-//    GLuint vnBuffer;
-//    glGenBuffers(1, &vnBuffer);
-//    glBindBuffer(GL_ARRAY_BUFFER, vnBuffer);
-//    glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
-
-    // Generate a buffer for the indices as well
-//    GLuint elementBuffer;
-//    glGenBuffers(1, &elementBuffer);
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
 
     // Get a handle for our "MVP" uniform
     GLuint UAVMatrixID = glGetUniformLocation(shaderProgramUAV, "UAV_MVP");
@@ -293,12 +335,6 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
                 1.f,  0.5f, 0.0f,    // right top
                 -1.f, 0.5f, 0.0f,    // left top
                 -1.f,-0.5f, 0.0f     // left bottom
-//                -0.5f,-1.f, 0.0f,    // left bottom
-//                -0.5f,1.f,  0.0f,    // right bottom
-//                0.5f,1.f,   0.0f,    // right top
-//                0.5f,1.f,   0.0f,    // right top
-//                0.5f,-1.f,  0.0f,    // left top
-//                -0.5f,-1.f, 0.0f     // left bottom
             };
     static const GLfloat ff_uv_buffer_data[] =
             {   // UV Coordinate
@@ -309,11 +345,6 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
                     0.06f, 1.f,
                     0.06f, 0.f
             };
-//    GLuint ff_indices[] =
-//            {
-//                0,1,2, // first triangle
-//                3,0,2  // second triangle
-//            };
     // Create and compile our GLSL program from the shaders
     GLuint shaderProgram = LoadShaders( "ffVertexShader.vertexshader",
                                         "ffFragmentShader.fragmentshader" );
@@ -330,11 +361,6 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // create and bind VAO
-//    GLuint VAO;
-//    glGenVertexArrays(1, &VAO);
-//    glBindVertexArray(VAO);
-
     // generate a VBO
     GLuint VBO;
     glGenBuffers(1, &VBO);
@@ -347,18 +373,13 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
     glGenBuffers(1, &UV);
     glBindBuffer(GL_ARRAY_BUFFER, UV);
     glBufferData(GL_ARRAY_BUFFER, sizeof(ff_uv_buffer_data), ff_uv_buffer_data, GL_STATIC_DRAW);
-    // Create EBO and bind to buffer
-//    GLuint EBO;
-//    glGenBuffers(1, &EBO);
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ff_indices), ff_indices, GL_STATIC_DRAW);
+
 #endif
 #ifdef DRAW_SPHERE
     /* **************************************************************************
      * Shaders and VAO, VBP, EBO of SPHERE
      * **************************************************************************/
-//    glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     // Create and compile our GLSL program from the shaders
     GLuint shaderProgramSPH = LoadShaders( "SphereVertexShader.vertexshader",
                                            "SphereFragmentShader.fragmentshader" );
@@ -380,19 +401,9 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
     /* **********************************************************************************
      * Draw something
      * ************************************************************************************/
-//    double lastTime = glfwGetTime();
 
     do//render loop
     {
-//        double currentTime = glfwGetTime();
-////        float deltaTime = (float);
-//        if(abs(round((currentTime - lastTime)*100)-30.f)<15.f)
-//        {
-//
-//            cout<<currentTime-lastTime<<endl;
-//            lastTime = currentTime;
-//        }
-
         // Dark background
         glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
         // clear screen before a new render
@@ -423,8 +434,6 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
             glm::vec3 gOrientation(PI/2, 0.f, 0.f);
             for (auto u:UAVs)
             {
-//                    cout<<"pos:"<<(*u)[1]<<" "<<(*u)[0]<<" "<<(*u)[2]<<endl;
-//                    glm::vec3 gPosition(-50.f + j*25.f, -25.f + i*25.f, 2.f);
                     glm::vec3 gPosition((*u)[1],(*u)[0],(*u)[2]);
                     // Build the model matrix
                     glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.f), gOrientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -462,30 +471,6 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
                     glDisableVertexAttribArray(0);
                     glDisableVertexAttribArray(1);
             }
-
-/*            // Index buffer
-//            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-
-            // 3rd attribute buffer : normals
-//    glEnableVertexAttribArray(2);
-//    glBindBuffer(GL_ARRAY_BUFFER, vnBuffer);
-//    glVertexAttribPointer(
-//            2,                                // attribute
-//            3,                                // size
-//            GL_FLOAT,                         // type
-//            GL_FALSE,                         // normalized?
-//            0,                                // stride
-//            (void*)0                          // array buffer offset
-//    );
-//            glBindVertexArray(vertexArray);
-//            // Draw the UAV
-//            glDrawElements(
-//                    GL_TRIANGLES,      // mode
-//                    indices.size(),    // count
-//                    GL_UNSIGNED_SHORT,   // type
-//                    (void*)0           // element array buffer offset
-//            );*/
-
         }
 #endif
 #ifdef DRAW_FF
@@ -585,7 +570,7 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
         this_thread::sleep_for(chrono::milliseconds(30));
     } // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-           glfwWindowShouldClose(window) == 0);
+           glfwWindowShouldClose(window) == 0 && !endThreadFlag);
 
 #ifdef DRAW_FF
     glDeleteBuffers(1, &VBO);
@@ -606,7 +591,6 @@ int oglThreadFunc()//vector<Vector3f*> uavPosition)
 #endif
     // Close OpenGL window and terminate GLFW
     glfwTerminate();
-
     return 0;
 }
 

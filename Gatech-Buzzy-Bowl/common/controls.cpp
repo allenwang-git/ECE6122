@@ -6,10 +6,9 @@ extern GLFWwindow* window; // The "extern" keyword here is to access the variabl
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-using namespace glm;
-#include "../include/main.h"
 #include "controls.hpp"
 #include <iostream>
+using namespace glm;
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
