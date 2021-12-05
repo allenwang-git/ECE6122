@@ -23,7 +23,7 @@ using namespace std;
 
 // constant number
 #define PI 3.1415926
-#define WAIT_TIME 0.1
+#define WAIT_TIME 5
 
 class ECE_UAV
 {
@@ -67,14 +67,13 @@ private:
     const double mass = 1.0f;
     const double g = 9.81f;
     const double dt = 0.01f;
-    const Vector3d destPosition{0.,0.,20.f};
+    const Vector3d destPosition{0.,0.,50.};
     double currentV = 0.f;
     Vector3d iniPosition;
     Vector3d position;
     Vector3d velocity;
     Vector3d acceleration;
     Vector3d unitLinearDirection;
-
     // process flag
     bool waitFlag = true;
     bool arriveFlag = false;

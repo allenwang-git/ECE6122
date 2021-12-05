@@ -33,7 +33,6 @@ void threadFunction(ECE_UAV* pUAV)
             if(duration_cast<duration<double>>(high_resolution_clock::now()-pUAV->startTimestamp).count() >= WAIT_TIME)
             {
                 pUAV->setWaitFlag();
-                cout<<"Ready to launch!"<<endl;
             }
         }
         else if(!pUAV->getArriveFlag())
@@ -168,10 +167,10 @@ void ECE_UAV::join()
  * */
 void ECE_UAV::initialize(double *maxV, double *acc, double *theta, double *alpha, Vector4d *unitScale)
 {
-    //    generate a max speed for uav between 0.5~2.0
+    //    generate a max speed for uav between 1.0~2.0
     unsigned seed = hash<thread::id>()(this_thread::get_id());
     default_random_engine e(seed);
-    uniform_real_distribution<double> u(1.9, 2.0);
+    uniform_real_distribution<double> u(1.0, 2.0);
     *maxV = u(e);
 
     // compute the desired acceleration and angle for linear movement
@@ -290,8 +289,8 @@ void ECE_UAV::updateLinearMovement(const double &maxV, double &a, const double &
 bool ECE_UAV::checkReachSphere()
 {
     double d = getDistance(position,destPosition);
-    if(d < (10+1e-2)){
-        cout<<"arrive"<<endl;
+    if(d < (10+1e-2))
+    {
         velocity.setZero();
         return true;
     }
@@ -331,8 +330,8 @@ void ECE_UAV::initSphereMovement(const Vector4d unit)
 bool ECE_UAV::checkInitSphere(const double initSpeed)
 {
     updateCurrentV();
-    if(abs(currentV-initSpeed)<0.2){
-
+    if(abs(currentV-initSpeed)<0.2)
+    {
         return true;
     }
     else
@@ -349,7 +348,7 @@ void ECE_UAV::updateSphereMovement(const double initV)
 
     updateCurrentV();
     // compute Force value according to distance
-    double f_hook = initV * initV * initV * (10. - distance) + initV * initV * (initV - currentV);
+    double f_hook = 50 * currentV * (10. - distance);
 
     // compute the Hooke Force vector
     Vector3d F_hook;
@@ -386,7 +385,7 @@ void ECE_UAV::updateSphereMovement(const double initV)
 }
 
 /*
- * Generate the random initial force unit direction and value for each UAV
+ * Generate the random initial force unit direction and desirable speed value for each UAV
  * */
 Vector4d ECE_UAV::genRandomUnit()
 {
@@ -397,18 +396,25 @@ Vector4d ECE_UAV::genRandomUnit()
     uniform_real_distribution<double> u(-1.0, 1.0);
     uniform_real_distribution<double> s(2.0,5.0);
     unit_vector.setZero();
-    for (int i = 0; i < 3; ++i)
+    Vector3d normalVector = getUnitDirection(iniPosition,destPosition);
+    while(1)
     {
-        unit_vector[i] = u(e);
-        unit += unit_vector[i] * unit_vector[i];
-    }
-    if(unit>0.)
-    {
-        unit = sqrt(unit);
+        unit = 0.;
         for (int i = 0; i < 3; ++i)
         {
-            unit_vector[i] = unit_vector[i] / unit;
+            unit_vector[i] = u(e);
+            unit += unit_vector[i] * unit_vector[i];
         }
+        if(unit>0.)
+        {
+            unit = sqrt(unit);
+            for (int i = 0; i < 3; ++i)
+            {
+                unit_vector[i] = unit_vector[i] / unit;
+            }
+        }
+        if(abs((normalVector[0]*unit_vector[0] )+(normalVector[1]*unit_vector[1]) +(normalVector[2]*unit_vector[2]))<1e-3)
+            break;
     }
     unit_vector[3] = s(e);
     cout<<unit_vector[3]<<endl;
@@ -424,7 +430,9 @@ bool ECE_UAV::checkCollision(Vector3d pos)
     if(dis<=0.2*2)
     {
         return true;
-    }else{
+    }
+    else
+    {
         return false;
     }
 }

@@ -32,7 +32,7 @@ Description:
 #define DRAW_SPHERE
 
 // run time
-#define RUN_TIME 5.0
+#define RUN_TIME 60.0
 
 void collisionThreadFunc();
 int oglThreadFunc();
@@ -40,5 +40,5 @@ bool checkAllIn();
 bool checkUavCollision(Vector3d posA, Vector3d posB);
 // flag to end the opengl and collision threads
 bool endThreadFlag = false;
-
+const Vector3d sphereOrigin = {0., 0., 50.};
 #endif //GATECH_BUZZY_BOWL_MAIN_H

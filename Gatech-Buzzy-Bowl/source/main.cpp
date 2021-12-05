@@ -66,25 +66,10 @@ int main()
     UAVs.push_back(uav_14.getPosition());
     UAVs.push_back(uav_15.getPosition());
 
-/*    uav_1.start();
-    uav_2.start();
-    uav_3.start();
-    uav_4.start();
-    uav_5.start();
-    uav_6.start();
-    uav_7.start();
-    uav_8.start();
-    uav_9.start();
-    uav_10.start();
-    uav_11.start();
-    uav_12.start();
-    uav_13.start();
-    uav_14.start();
-    uav_15.start();*/
-
     // handle the uav collision
     thread colThread(collisionThreadFunc);
     bool timerFlag = false;
+    double timeTillNow = 0.;
     while(true)
     {
         // set the start timestamp and turn on the timer
@@ -96,13 +81,13 @@ int main()
         {
             timerFlag = true;
             allReachSphereTimestamp = high_resolution_clock::now();
-
+            cout<<"[INFO] All UAVs have arrived the surface, activate the timer."<<endl;
         }
         // check the timer
-        double timeTillNow = duration_cast<duration<double>>(high_resolution_clock::now() - allReachSphereTimestamp).count();
+        timeTillNow = duration_cast<duration<double>>(high_resolution_clock::now() - allReachSphereTimestamp).count();
         if(timerFlag && timeTillNow >= RUN_TIME && checkAllIn())
         {
-            cout<< "End time "<<timeTillNow<<endl;
+            cout<<"[INFO] All UAVs are inside the sphere, program ends "<<timeTillNow<<" seconds after activating the timer."<<endl;
             uav_1.setEndFlag(); uav_2.setEndFlag(); uav_3.setEndFlag();
             uav_4.setEndFlag(); uav_5.setEndFlag(); uav_6.setEndFlag();
             uav_7.setEndFlag(); uav_8.setEndFlag(); uav_9.setEndFlag();
@@ -111,32 +96,12 @@ int main()
             endThreadFlag = true;
             break;
         }
-        else if(timerFlag)
-        {
-            cout<<"current time "<<timeTillNow<<endl;
-        }
         // set the update rate
-        this_thread::sleep_for(chrono::milliseconds(100));
+        this_thread::sleep_for(chrono::milliseconds(30));
     }
-/*    uav_1.join();
-    uav_2.join();
-    uav_3.join();
-    uav_4.join();
-    uav_5.join();
-    uav_6.join();
-    uav_7.join();
-    uav_8.join();
-    uav_9.join();
-    uav_10.join();
-    uav_11.join();
-    uav_12.join();
-    uav_13.join();
-    uav_14.join();
-    uav_15.join();*/
 
     oglThread.join();
     colThread.join();
-
     return -1;
 
 }
@@ -144,19 +109,23 @@ int main()
  * Check if the uav collide with others
  * @return true if a uav collides with others
  * */
-bool checkUavCollision(Vector3d posA, Vector3d posB){
+bool checkUavCollision(Vector3d posA, Vector3d posB)
+{
     double distance = 0.;
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i)
+    {
         distance += ((posA[i] - posB[i]) * (posA[i] - posB[i]));
     }
-    if(distance>0.) {
+    if(distance>0.)
+    {
         distance = sqrt(distance);
     }
-
     if(distance<=0.2*2)
     {
         return true;
-    }else{
+    }
+    else
+    {
         return false;
     }
 
@@ -168,12 +137,12 @@ bool checkUavCollision(Vector3d posA, Vector3d posB){
  * */
 bool checkAllIn()
 {
-    const Vector3d sphereOrigin = {0., 0., 50.};
     for (auto u:UAVs)
     {
         double distance = 0.;
         double bias = 0.5;
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 3; ++i)
+        {
             distance += (((*u)[i] - sphereOrigin[i]) * ((*u)[i] - sphereOrigin[i]));
         }
         if (distance > 0.)
@@ -203,7 +172,7 @@ void collisionThreadFunc()
                 if(i!=j && collisionSet.find(i)==collisionSet.end() && collisionSet.find(j)==collisionSet.end()
                    && checkUavCollision(*UAVs[i],*UAVs[j]))
                 {
-                    cout<<i<<" "<<j<<"collide"<<endl;
+                    cout<<"[INFO] UAV-"<<i+1<<" collides with UAV-"<<j+1<<"."<<endl;
                     Vector3d posTmp = *UAVs[i];
                     *UAVs[i] = *UAVs[j];
                     *UAVs[j] = posTmp;
@@ -242,7 +211,8 @@ int oglThreadFunc()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Open a window and create its OpenGL context
-    window = glfwCreateWindow(SCREEN_LEN, SCREEN_WID, "Gatech Bowl", NULL, NULL);
+    window = glfwCreateWindow(SCREEN_LEN, SCREEN_WID, "Gatech Bowl - Yinuo Wang", NULL, NULL);
+    glfwSetWindowPos(window,300,300);
     if (window == NULL)
     {
         fprintf(stderr,
@@ -355,7 +325,7 @@ int oglThreadFunc()
     // Get a handle for our "myTextureSampler" uniform
     GLuint ffTexture  = glGetUniformLocation(shaderProgram, "ffTexture");
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -431,14 +401,14 @@ int oglThreadFunc()
             glUniform1i(uavTexture, 0);
             glUniform1f(uavColorFactor,colorFactor);
 
-            glm::vec3 gOrientation(PI/2, 0.f, 0.f);
+            glm::vec3 gOrientation(PI/2, 0., 0.);
             for (auto u:UAVs)
             {
                     glm::vec3 gPosition((*u)[1],(*u)[0],(*u)[2]);
                     // Build the model matrix
-                    glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.f), gOrientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+                    glm::mat4 RotationMatrix = glm::rotate(glm::mat4(1.), gOrientation.x, glm::vec3(1.0, 0.0, 0.0));
                     glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1.0), gPosition); // A bit to the left
-                    glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.06f, 0.06f, 0.05f));
+                    glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0), glm::vec3(0.06, 0.06, 0.05));
                     glm::mat4 ModelMatrix =  TranslationMatrix * RotationMatrix * ScalingMatrix;//
                     glm::mat4 UAV_MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
                     // Send our transformation to the currently bound shader,in the "MVP" uniform
@@ -483,7 +453,7 @@ int oglThreadFunc()
             glUseProgram(shaderProgram);
 
             // Model matrix
-            glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(62.0f, 60.0f, 1.0f));
+            glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0), glm::vec3(62.0, 60.0, 1.0));
             glm::mat4 ModelMatrix = ScalingMatrix;
             // Our ModelViewProjection : multiplication of our 3 matrices
             glm::mat4 FF_MVP = ProjectionMatrix * ViewMatrix * ModelMatrix; // Remember, matrix multiplication is the other way around
@@ -538,8 +508,8 @@ int oglThreadFunc()
             // Use  shader
             glUseProgram(shaderProgramSPH);
             // Model matrix
-            glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 20.f));
-            glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(10.f, 10.f, 10.f));
+            glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0., 0., 50.));
+            glm::mat4 ScalingMatrix = glm::scale(glm::mat4(1.0), glm::vec3(10., 10., 10.));
             glm::mat4 ModelMatrix = TranslationMatrix * ScalingMatrix;
             // Our ModelViewProjection : multiplication of our 3 matrices
             glm::mat4 SPH_MVP = ProjectionMatrix * ViewMatrix * ModelMatrix; // Remember, matrix multiplication is the other way around
