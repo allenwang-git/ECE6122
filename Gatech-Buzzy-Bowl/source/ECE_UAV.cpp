@@ -397,7 +397,7 @@ Vector4d ECE_UAV::genRandomUnit()
     uniform_real_distribution<double> s(2.0,5.0);
     unit_vector.setZero();
     Vector3d normalVector = getUnitDirection(iniPosition,destPosition);
-    while(1)
+    while(true)
     {
         unit = 0.;
         for (int i = 0; i < 3; ++i)
@@ -417,7 +417,6 @@ Vector4d ECE_UAV::genRandomUnit()
             break;
     }
     unit_vector[3] = s(e);
-    cout<<unit_vector[3]<<endl;
     return unit_vector;
 }
 /*
